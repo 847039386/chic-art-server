@@ -30,7 +30,8 @@ async function bootstrap() {
   var operatorLogService = app.get<OperatorLogService>(OperatorLogService) 
   app.useGlobalFilters(new AllExceptionsFilter() ,new HttpExceptionFilter(requestLogService) ,new OperatorExceptionsFilter(requestLogService,operatorLogService));
   app.useGlobalInterceptors(new RequestInterceptor(requestLogService,operatorLogService));
-  app.useGlobalGuards(new JwtAuthGuard(authService))
+  // 全局守卫
+  // app.useGlobalGuards(new JwtAuthGuard(authService))
   // 全局中间件
   app.use(new ResponseStartTime().use)
   // 静态路径

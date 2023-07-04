@@ -16,7 +16,7 @@ export class PermissionService {
 
 
   findAll() {
-    return this.requestLogSchema.find()
+    return this.requestLogSchema.find({},{}).lean()
   }
 
   findOne(id: number) {
