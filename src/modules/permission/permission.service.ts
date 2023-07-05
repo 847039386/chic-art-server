@@ -1,8 +1,7 @@
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreatePermissionDto } from './dto/create-permission.dto';
-import { UpdatePermissionDto } from './dto/update-permission.dto';
 
 @Injectable()
 export class PermissionService {
@@ -19,15 +18,13 @@ export class PermissionService {
     return this.requestLogSchema.find({},{}).lean()
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} permission`;
+
+  updateAvailable(id: string,available :boolean) {
+    return this.requestLogSchema.findByIdAndUpdate(id,{ available })
   }
 
-  update(id: number, updatePermissionDto: UpdatePermissionDto) {
-    return `This action updates a #${id} permission`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} permission`;
+  async remove(id: string) {
+    let _id = new Types.ObjectId(id)
+    return this.requestLogSchema.findByIdAndDelete(_id);
   }
 }

@@ -1,6 +1,6 @@
 import { Types } from 'mongoose'
-import * as MAY_ERROR from 'src/shared/data/error_codes.data'
-export const ErrorCodes = MAY_ERROR.ErrorCodes
+import * as MAY_ERROR from 'src/shared/data/result_code.data'
+export const ResultCode = MAY_ERROR.ResultCode
 
 // 此方法都是主动抛出异常
 
@@ -40,7 +40,7 @@ export class OperatorException {
         this.is_save_requestLog = typeof recordConfig.isSaveRequestLog =='undefined' ? true :recordConfig.isSaveRequestLog  //默认记录请求日志
         this.is_save_operator  = typeof recordConfig.isSaveOperator =='undefined' ? false :recordConfig.isSaveOperator      // 默认不记录操作日志
         if(error){ 
-            if(error.code && error.code != ErrorCodes.ERROR.code){
+            if(error.code && error.code != ResultCode.ERROR.code){
                 this.message = error.message
             }
             if(error.code){
@@ -65,7 +65,7 @@ export class BaseException {
         this.is_save_requestLog = typeof recordConfig.isSaveRequestLog =='undefined' ? true :recordConfig.isSaveRequestLog  //默认记录请求日志
         if(error){ 
 
-            if(error.code && error.code != ErrorCodes.ERROR.code){
+            if(error.code && error.code != ResultCode.ERROR.code){
                 this.message = error.message
             }
 

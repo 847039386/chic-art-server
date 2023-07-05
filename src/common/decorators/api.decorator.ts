@@ -1,7 +1,7 @@
 import { Types} from 'mongoose'
-import { ErrorCodes } from 'src/shared/data/error_codes.data'
 import { IOperatorLog } from 'src/shared/interfaces/log.interface'
 import { IApiAmendConfig } from "src/shared/interfaces/api_spec.interface"
+import { ResultCode } from 'src/shared/utils/base_exception.util'
 
 
 // export enum ApiTypes {
@@ -35,8 +35,8 @@ interface ICompulsionOperatorFormat {
 //         descriptor.value = async function (...args: any[]) {
 //             let result = { }         
 //             let results = await method.apply(this, args)
-//             let code = ErrorCodes.SUCCESS.code
-//             let message = ErrorCodes.SUCCESS.message
+//             let code = ResultCode.SUCCESS.code
+//             let message = ResultCode.SUCCESS.message
 //             let success = true;
 
 //             result = { success ,code ,message ,data :results.data }
@@ -112,8 +112,8 @@ interface operatorRequired {
 
 export const apiAmendFormat = (data :any,config_info? :IapiData) =>{
     let result = { }         
-    let code = ErrorCodes.SUCCESS.code
-    let message = ErrorCodes.SUCCESS.message
+    let code = ResultCode.SUCCESS.code
+    let message = ResultCode.SUCCESS.message
     let success = true;
 
     result = { success ,code ,message ,data }

@@ -5,7 +5,7 @@ import { UpdateOperatorLogDto } from './dto/update-operator_log.dto';
 import { apiAmendFormat} from 'src/common/decorators/api.decorator';
 import { ApiTags ,ApiOperation,ApiQuery ,ApiBearerAuth} from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { BaseException ,ErrorCodes} from 'src/shared/utils/base_exception.util';
+import { BaseException ,ResultCode} from 'src/shared/utils/base_exception.util';
 
 @ApiBearerAuth()
 @Controller('api/operator-log')
@@ -48,7 +48,7 @@ export class OperatorLogController {
         }
       })
     } catch (error) {
-      throw new BaseException(ErrorCodes.ERROR,{},error)
+      throw new BaseException(ResultCode.ERROR,{},error)
     }
   }
 

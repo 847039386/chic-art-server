@@ -4,7 +4,7 @@ import { LoginDto } from './dto/login.dto';
 import { ApiBody, ApiTags ,ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { AccountService } from '../account/account.service';
 import { encryptCredential, makeSalt } from 'src/shared/utils/cryptogram.util';
-import { OperatorException ,BaseException ,ErrorCodes } from 'src/shared/utils/base_exception.util';
+import { OperatorException ,BaseException ,ResultCode } from 'src/shared/utils/base_exception.util';
 import { apiAmendFormat } from 'src/common/decorators/api.decorator';
 import { UserService } from '../user/user.service'
 import { RegisterDto } from './dto/register.dto';
@@ -84,7 +84,7 @@ export class AuthController {
           })
         } else {
           // 密码错误
-          throw new OperatorException(ErrorCodes.ACCOUNT_PASSWORD_ERROR,{
+          throw new OperatorException(ResultCode.ACCOUNT_PASSWORD_ERROR,{
             operatorType:'登陆',
             module :'账户',
             subject : '本站',
@@ -93,10 +93,10 @@ export class AuthController {
           
         }
       }else{
-        throw new BaseException(ErrorCodes.ACCOUNT_USERNAME_NOT,{})
+        throw new BaseException(ResultCode.ACCOUNT_USERNAME_NOT,{})
       }
     } catch (error) {
-      throw new BaseException(ErrorCodes.ERROR,{},error)
+      throw new BaseException(ResultCode.ERROR,{},error)
     }
   }
 
@@ -117,20 +117,20 @@ export class AuthController {
     var credentialPattern = /^(?=.*[a-zA-Z])(?=.*\d).{6,16}$/;
     try {
       if(credential != r_credential){
-        throw new BaseException(ErrorCodes.ACCOUNT_PASSWORD_DIFF,{})
+        throw new BaseException(ResultCode.ACCOUNT_PASSWORD_DIFF,{})
       }
 
       if(!identifierPattern.test(identifier)){
-        throw new BaseException(ErrorCodes.ACCOUNT_USERNAME_FORMAT_ERROR,{})
+        throw new BaseException(ResultCode.ACCOUNT_USERNAME_FORMAT_ERROR,{})
       }
 
       if(!credentialPattern.test(credential)){
-        throw new BaseException(ErrorCodes.ACCOUNT_PASSWORD_FORMAT_ERROR,{})
+        throw new BaseException(ResultCode.ACCOUNT_PASSWORD_FORMAT_ERROR,{})
       }
 
       acco = await this.accountService.findOne({identifier , identity_type:'username'})
       if(acco){
-        throw new BaseException(ErrorCodes.ACCOUNT_USERNAME_REPEAT,{})
+        throw new BaseException(ResultCode.ACCOUNT_USERNAME_REPEAT,{})
       }else{
         user = await this.userService.create({ name :name ,avatar})
         user_id = user._id
@@ -139,7 +139,7 @@ export class AuthController {
         account = await this.accountService.create({ user_id ,identity_type :'username' ,identifier ,credential:hash_credential ,salt })
       }
     } catch (error) {
-      throw new BaseException(ErrorCodes.ERROR,{},error)
+      throw new BaseException(ResultCode.ERROR,{},error)
     } 
     return apiAmendFormat({ name ,avatar },{
       isSaveOperator:true,

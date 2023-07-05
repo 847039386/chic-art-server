@@ -4,7 +4,7 @@ import { RequestLogService } from './request_log.service';
 import { CreateRequestLogDto } from './dto/create-request_log.dto';
 import { UpdateRequestLogDto } from './dto/update-request_log.dto';
 import { apiAmendFormat } from 'src/common/decorators/api.decorator';
-import { BaseException, ErrorCodes ,OperatorException } from 'src/shared/utils/base_exception.util'
+import { BaseException, ResultCode ,OperatorException } from 'src/shared/utils/base_exception.util'
 import { AuthGuard } from '@nestjs/passport';
 
 @ApiBearerAuth()
@@ -46,7 +46,7 @@ export class RequestLogController {
         }
       })
     } catch (error) {
-      throw new BaseException(ErrorCodes.ERROR,{},error)
+      throw new BaseException(ResultCode.ERROR,{},error)
     }
   }
 

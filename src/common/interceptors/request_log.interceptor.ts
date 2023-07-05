@@ -3,7 +3,7 @@ import { Request } from 'express'
 import { map } from 'rxjs/operators';
 import { getRequestParams } from 'src/shared/utils/tools.util'
 import { IApiAmendConfig } from 'src/shared/interfaces/api_spec.interface'
-import { BaseException, ErrorCodes } from 'src/shared/utils/base_exception.util'
+import { BaseException, ResultCode } from 'src/shared/utils/base_exception.util'
 import { CreateOperatorLogDto } from 'src/modules/operator_log/dto/create-operator_log.dto';
 import { RequestLogService } from 'src/modules/request_log/request_log.service';
 import { OperatorLogService } from 'src/modules/operator_log/operator_log.service';
@@ -47,7 +47,7 @@ export class RequestInterceptor implements NestInterceptor {
                                     }
 
                                     this.requestLogService.create({ip ,status_code ,request_method ,api ,platform,
-                                        error_code :ErrorCodes.SUCCESS.code,
+                                        error_code :ResultCode.SUCCESS.code,
                                         response_time :Date.now() - response_start_time,
                                         request: getRequestParams(request),
                                         response:responseData,
@@ -64,7 +64,7 @@ export class RequestInterceptor implements NestInterceptor {
                             }
                         } catch (error) {
                             // var nems = JSON.stringify({ message : "格式错误" ,start })
-                            throw new BaseException(ErrorCodes.ERROR,{});
+                            throw new BaseException(ResultCode.ERROR,{});
                         }
 
                     }

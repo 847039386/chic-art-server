@@ -9,7 +9,7 @@ import {
   import { UserService } from 'src/modules/user/user.service';
   import { NestExpressApplication } from '@nestjs/platform-express';
   import { AppModule } from 'src/app.module';
-  import { BaseException, ErrorCodes } from 'src/shared/utils/base_exception.util';
+  import { BaseException, ResultCode } from 'src/shared/utils/base_exception.util';
   import { allRouter } from 'src/shared/data/router.data';
   /**
    * @guard文件作用:守卫
@@ -33,7 +33,7 @@ import {
         // 获取token Authorization
         const accessToken = req.get('Authorization');
         if(!accessToken){
-          throw new BaseException(ErrorCodes.AUTH_TOKEN_ERROR,{})
+          throw new BaseException(ResultCode.AUTH_TOKEN_ERROR,{})
         }else{
           const user = await this.authService.verifyToken(accessToken);
           console.log(user,'??????')
@@ -54,7 +54,7 @@ import {
         // }
         return true
       } catch (e) {
-        throw new BaseException(ErrorCodes.ERROR,{},e)
+        throw new BaseException(ResultCode.ERROR,{},e)
         return false;
       }
     }

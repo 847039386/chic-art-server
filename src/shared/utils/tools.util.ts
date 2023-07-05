@@ -22,11 +22,6 @@ export function arrayToTree(arr, parent) {
     arr = treeFormat(arr)
     for (var i = 0; i < arr.length; i++) {
       if (arr[i].parent_id === parent) {
-        // var node = {
-        //   _id: arr[i]._id,
-          
-        //   children: arrayToTree(arr, arr[i]._id)
-        // };
         let node = {}
         let children = arrayToTree(arr, arr[i]._id)
         if(children.length > 0){
@@ -46,8 +41,27 @@ function treeFormat(arr :[any]){
     return newarr.map((item) => {
         item.parent_id =  item.parent_id ? item.parent_id.toString() : null       
         item._id =   item._id.toString()
-        console.log(item)
         return item
     })
 }
   
+function findParent(data, target, result) {
+    for (let item of data) {
+      if (item.id === target.id) {
+        //将查找到的目标数据加入结果数组中
+        //可根据需求unshift(item.id)或unshift(item)
+        result.unshift(item.label)
+        return true
+      }
+      if (item.children && item.children.length > 0) {
+        //根据查找到的结果往上找父级节点
+        let isFind = findParent(item.children, target, result)
+        if (isFind) {
+          result.unshift(item.label)
+          return true
+        }
+      }
+    }
+    //走到这说明没找到目标
+    return false
+}

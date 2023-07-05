@@ -2,7 +2,7 @@ import { Controller, Body, Patch, UseGuards, Request } from '@nestjs/common';
 import { AccountService } from './account.service';
 import { apiAmendFormat } from 'src/common/decorators/api.decorator';
 import { ApiTags ,ApiOperation, ApiBearerAuth, ApiBody } from '@nestjs/swagger';
-import { OperatorException ,ErrorCodes ,BaseException } from 'src/shared/utils/base_exception.util';
+import { OperatorException ,ResultCode ,BaseException } from 'src/shared/utils/base_exception.util';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { encryptCredential } from 'src/shared/utils/cryptogram.util';
 import { AuthService } from '../auth/auth.service';
@@ -37,21 +37,21 @@ export class AccountController {
      try {
       
       if(credential != r_credential){
-        throw new BaseException(ErrorCodes.ACCOUNT_PASSWORD_DIFF,{})
+        throw new BaseException(ResultCode.ACCOUNT_PASSWORD_DIFF,{})
       }
       if(!credentialPattern.test(credential)){
-        throw new BaseException(ErrorCodes.ACCOUNT_PASSWORD_FORMAT_ERROR,{})
+        throw new BaseException(ResultCode.ACCOUNT_PASSWORD_FORMAT_ERROR,{})
       }
       let oldAccount = await this.accountService.findOne({user_id :new Types.ObjectId(user_id) ,identity_type:'username'})
       if(oldAccount && oldAccount._id){
         let salt = oldAccount.salt
         if(oldAccount.identifier != identifier){
-          throw new BaseException(ErrorCodes.ACCOUNT_USERNAME_ERROR,{})
+          throw new BaseException(ResultCode.ACCOUNT_USERNAME_ERROR,{})
         }
 
         oldHashedPassword =  encryptCredential(o_credential,salt)
         if(oldHashedPassword != oldAccount.credential){
-          throw new BaseException(ErrorCodes.ACCOUNT_PASSWORD_OLD_ERROR,{})
+          throw new BaseException(ResultCode.ACCOUNT_PASSWORD_OLD_ERROR,{})
         }
 
         hash_credential = encryptCredential(credential,salt)
@@ -72,10 +72,10 @@ export class AccountController {
         })
         
       }else{
-        throw new BaseException(ErrorCodes.ACCOUNT_USERNAME_NOT,{})
+        throw new BaseException(ResultCode.ACCOUNT_USERNAME_NOT,{})
       }
     } catch (error) {
-      throw new OperatorException(ErrorCodes.ERROR,{ user_id ,operatorType:'修改' ,module:'账户' ,subject:'密码' ,description:`修改密码失败`},{ isSaveOperator:true },error)
+      throw new OperatorException(ResultCode.ERROR,{ user_id ,operatorType:'修改' ,module:'账户' ,subject:'密码' ,description:`修改密码失败`},{ isSaveOperator:true },error)
     } 
   }
 

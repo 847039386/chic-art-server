@@ -2,7 +2,7 @@ import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Servi
 import { Request, Response } from 'express';
 import { IApiAmendConfig } from 'src/shared/interfaces/api_spec.interface'
 import { RequestLogService } from 'src/modules/request_log/request_log.service'; 
-import { ErrorCodes, OperatorException } from 'src/shared/utils/base_exception.util'
+import { ResultCode, OperatorException } from 'src/shared/utils/base_exception.util'
 import { OperatorLogService } from 'src/modules/operator_log/operator_log.service'
 import { getRequestParams } from 'src/shared/utils/tools.util';
 import { Types } from 'mongoose';

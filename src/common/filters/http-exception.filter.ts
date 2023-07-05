@@ -1,7 +1,7 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { RequestLogService } from 'src/modules/request_log/request_log.service';
-import { ErrorCodes } from 'src/shared/utils/base_exception.util';
+import { ResultCode } from 'src/shared/utils/base_exception.util';
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
@@ -32,7 +32,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
             status_code:status,
             request_method:request.method, 
             api:request.path, 
-            error_code : ErrorCodes.ERROR.code,
+            error_code : ResultCode.ERROR.code,
             response_time : Date.now() - response_start_time,        
             request: request.params,
             response:errorResponse,

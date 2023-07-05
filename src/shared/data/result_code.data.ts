@@ -1,4 +1,4 @@
-export class ErrorCodes {
+export class ResultCode {
     static ERROR = { code :-1 ,message:"失败"} 
     static SUCCESS = { code :0 ,message:"成功"} 
     // 公共错误
@@ -27,4 +27,4 @@ export class ErrorCodes {
     
 }
 
-// 
+
