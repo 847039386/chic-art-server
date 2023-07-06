@@ -15,53 +15,70 @@ export const getRequestParams = (request :Request) =>{
     }
     return params
 }
-
-
-export function arrayToTree(arr, parent) {
-    var tree = [];
-    arr = treeFormat(arr)
-    for (var i = 0; i < arr.length; i++) {
-      if (arr[i].parent_id === parent) {
-        let node = {}
-        let children = arrayToTree(arr, arr[i]._id)
-        if(children.length > 0){
-            node = Object.assign(arr[i],{ children })
-        }else{
-            node = arr[i]
-        }
-        tree.push(node);
-      }
-    }
-    return tree;
-}
-
-
-function treeFormat(arr :[any]){
-    let newarr = arr;
-    return newarr.map((item) => {
-        item.parent_id =  item.parent_id ? item.parent_id.toString() : null       
-        item._id =   item._id.toString()
-        return item
-    })
-}
+/**
+ * 深拷贝
+ * @param target 源对象
+ * @returns 新对象
+ */
+export function deepClone(target) {
+  const map = new WeakMap()
   
-function findParent(data, target, result) {
-    for (let item of data) {
-      if (item.id === target.id) {
-        //将查找到的目标数据加入结果数组中
-        //可根据需求unshift(item.id)或unshift(item)
-        result.unshift(item.label)
-        return true
+  function isObject(target) {
+      return (typeof target === 'object' && target ) || typeof target === 'function'
+  }
+
+  function clone(data) {
+      if (!isObject(data)) {
+          return data
       }
-      if (item.children && item.children.length > 0) {
-        //根据查找到的结果往上找父级节点
-        let isFind = findParent(item.children, target, result)
-        if (isFind) {
-          result.unshift(item.label)
-          return true
-        }
+      if ([Date, RegExp].includes(data.constructor)) {
+          return new data.constructor(data)
       }
-    }
-    //走到这说明没找到目标
-    return false
+      if (typeof data === 'function') {
+          return new Function('return ' + data.toString())()
+      }
+      const exist = map.get(data)
+      if (exist) {
+          return exist
+      }
+      if (data instanceof Map) {
+          const result = new Map()
+          map.set(data, result)
+          data.forEach((val, key) => {
+              if (isObject(val)) {
+                  result.set(key, clone(val))
+              } else {
+                  result.set(key, val)
+              }
+          })
+          return result
+      }
+      if (data instanceof Set) {
+          const result = new Set()
+          map.set(data, result)
+          data.forEach(val => {
+              if (isObject(val)) {
+                  result.add(clone(val))
+              } else {
+                  result.add(val)
+              }
+          })
+          return result
+      }
+      const keys = Reflect.ownKeys(data)
+      const allDesc = Object.getOwnPropertyDescriptors(data)
+      const result = Object.create(Object.getPrototypeOf(data), allDesc)
+      map.set(data, result)
+      keys.forEach(key => {
+          const val = data[key]
+          if (isObject(val)) {
+              result[key] = clone(val)
+          } else {
+              result[key] = val
+          }
+      })
+      return result
+  }
+
+  return clone(target)
 }

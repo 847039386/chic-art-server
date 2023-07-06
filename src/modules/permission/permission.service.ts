@@ -2,6 +2,7 @@ import { Model, Types } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreatePermissionDto } from './dto/create-permission.dto';
+import { sonsTree ,treeFormat ,handleTree ,familyTree ,getTreeIds } from 'src/shared/utils/tree.util'
 
 @Injectable()
 export class PermissionService {
@@ -18,13 +19,17 @@ export class PermissionService {
     return this.requestLogSchema.find({},{}).lean()
   }
 
-
-  updateAvailable(id: string,available :boolean) {
-    return this.requestLogSchema.findByIdAndUpdate(id,{ available })
+  // 此方法接受一个id数组
+  async updateAvailable(ids: string [],available :boolean) {
+    console.log(ids,'serverids')
+    return await this.requestLogSchema.updateMany({_id: {$in: ids}},{ available })
   }
 
+  // 该方法传入权限id 将会删除他下面所有的子集，这其中包括他自己
   async remove(id: string) {
-    let _id = new Types.ObjectId(id)
-    return this.requestLogSchema.findByIdAndDelete(_id);
+    let result = await this.requestLogSchema.find({},{}).lean()
+    let children = sonsTree(treeFormat(result),id)
+    let ids = getTreeIds(children).concat(id)
+    return await this.requestLogSchema.deleteMany({_id: {$in: ids}});
   }
 }

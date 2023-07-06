@@ -24,7 +24,8 @@ export class ResultCode {
     static AUTH_TOKEN_NOT = { code :20301 ,message:"请先登陆"} 
     static AUTH_TOKEN_ERROR = { code :20302 ,message:"token错误"} 
     static AUTH_TOKEN_EXPIRED = { code :20303 ,message:"token已经过期"} 
-    
+    // 权限
+    static PERMISSION_PARENT_IS_CLOSE = { code :20401 ,message:"当前父级权限是关闭的"} 
 }
 
 

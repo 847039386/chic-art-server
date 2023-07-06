@@ -5,7 +5,9 @@ import { UpdatePermissionAvailableDto } from './dto/update-permission.dto';
 import { ApiBody, ApiNotImplementedResponse, ApiOperation,  ApiTags } from '@nestjs/swagger';
 import { apiAmendFormat } from 'src/common/decorators/api.decorator';
 import { Types } from 'mongoose';
-import { arrayToTree } from 'src/shared/utils/tools.util';
+import { deepClone} from 'src/shared/utils/tools.util';
+import { sonsTree ,treeFormat ,handleTree ,familyTree ,getTreeIds } from 'src/shared/utils/tree.util'
+
 import { BaseException, ResultCode } from 'src/shared/utils/base_exception.util';
 import { DeletePermissionDto } from './dto/delete-permission.dto';
 
@@ -22,7 +24,7 @@ export class PermissionController {
     let permission = {
       name:createPermissionDto.name,
       description:createPermissionDto.description,
-      available :true,
+      available :createPermissionDto.available || false,
       type:createPermissionDto.type,
       code :createPermissionDto.code,
     }
@@ -43,20 +45,41 @@ export class PermissionController {
   // @ApiAmendDecorator({ module :'权限' ,subject:'权限查询' })
   @ApiOperation({ summary: '查询权限树', description: '查询所有权限，不分页,返回树形结构' }) 
   async findAll() {
-    return apiAmendFormat(arrayToTree(await this.permissionService.findAll(),null));
+    let result = await this.permissionService.findAll()
+    let newResult = treeFormat(result)
+    let tree = handleTree(JSON.parse(JSON.stringify(newResult)),'_id','parent_id');
+    return apiAmendFormat(tree,{isTakeResponse:false});
   }
 
 
   @Patch('up_available')
   @ApiOperation({ summary: '修改权限状态', description: '设置权限是否开启，开启后则会限制，不开启将不会受限制' }) 
-  updateAvailable(@Body() body: UpdatePermissionAvailableDto) {
+  async updateAvailable(@Body() body: UpdatePermissionAvailableDto) {
     try {
       let id = body.id
       if(!id && typeof body.available == 'boolean'){
         throw new BaseException(ResultCode.COMMON_PARAM_ERROR,{})
       }
-      return this.permissionService.updateAvailable(id, body.available);
+      let result = treeFormat(await this.permissionService.findAll())
+      let parent:any = familyTree(result,id)
+      let isUp = true;
+      if(parent.length > 1){
+        for (let index = 1; index < parent.length; index++) {
+          if(!parent[index].available){
+            isUp = false
+            break
+          }
+        }
+      }
+      if(isUp){
+        let children = sonsTree(result,id)
+        let ids = getTreeIds(children).concat(id)
+        return apiAmendFormat(await this.permissionService.updateAvailable(ids, body.available));
+      }else{
+        throw new BaseException(ResultCode.PERMISSION_PARENT_IS_CLOSE,{})
+      }
     } catch (error) {
+      console.log(error)
       throw new BaseException(ResultCode.ERROR,{},error)
     }
   }
