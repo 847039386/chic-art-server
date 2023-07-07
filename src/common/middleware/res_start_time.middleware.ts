@@ -5,9 +5,9 @@ import { Request, Response } from 'express';
 export class ResponseStartTime implements NestMiddleware {
   use(req: Request, res: Response, next: Function) {
     res.setHeader('response-start-time',Date.now())
-    // setTimeout(() => {
-    //   next();
-    // }, 500);
-    next();
+    setTimeout(() => {
+      next();
+    }, 500);
+    // next();
   }
 }

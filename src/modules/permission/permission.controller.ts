@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { PermissionService } from './permission.service';
 import { CreatePermissionDto } from './dto/create-permission.dto';
-import { UpdatePermissionAvailableDto } from './dto/update-permission.dto';
+import { UpdatePermissionAvailableDto ,UpdatePermissionDto } from './dto/update-permission.dto';
 import { ApiBody, ApiNotImplementedResponse, ApiOperation,  ApiTags } from '@nestjs/swagger';
 import { apiAmendFormat } from 'src/common/decorators/api.decorator';
 import { Types } from 'mongoose';
@@ -47,8 +47,8 @@ export class PermissionController {
   async findAll() {
     let result = await this.permissionService.findAll()
     let newResult = treeFormat(result)
-    let tree = handleTree(JSON.parse(JSON.stringify(newResult)),'_id','parent_id');
-    return apiAmendFormat(tree,{isTakeResponse:false});
+    // let tree = handleTree(JSON.parse(JSON.stringify(newResult)),'_id','parent_id');
+    return apiAmendFormat(newResult,{isTakeResponse:false});
   }
 
 
@@ -79,7 +79,25 @@ export class PermissionController {
         throw new BaseException(ResultCode.PERMISSION_PARENT_IS_CLOSE,{})
       }
     } catch (error) {
-      console.log(error)
+      throw new BaseException(ResultCode.ERROR,{},error)
+    }
+  }
+
+  @Patch('update')
+  @ApiOperation({ summary: '修改权限状态', description: '设置权限是否开启，开启后则会限制，不开启将不会受限制' }) 
+  async updateById(@Body() body: UpdatePermissionDto) {
+    try {
+      console.log(body)
+      let id = body.id
+      let code = body.code
+      let description = body.description
+      let type = body.type
+      let name = body.name
+      if(!id || !code || !description || !type || !name){
+        throw new BaseException(ResultCode.COMMON_PARAM_ERROR,{})
+      }
+      return apiAmendFormat(await this.permissionService.updateById(body));
+    } catch (error) {
       throw new BaseException(ResultCode.ERROR,{},error)
     }
   }
