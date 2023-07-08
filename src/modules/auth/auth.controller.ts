@@ -5,10 +5,9 @@ import { ApiBody, ApiTags ,ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { AccountService } from '../account/account.service';
 import { encryptCredential, makeSalt } from 'src/shared/utils/cryptogram.util';
 import { OperatorException ,BaseException ,ResultCode } from 'src/shared/utils/base_exception.util';
-import { apiAmendFormat } from 'src/common/decorators/api.decorator';
+import { apiAmendFormat } from 'src/shared/utils/api.util';
 import { UserService } from '../user/user.service'
 import { RegisterDto } from './dto/register.dto';
-import { User } from '../user/schema/user.schema';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 @Controller('api/auth')
@@ -29,23 +28,26 @@ export class AuthController {
   @ApiOperation({ summary: '刷新token' ,description:'登陆后会获取两个token，一个用来请求，一个用来刷新，'}) 
   async refreshToken(@Body() body :RefreshTokenDto) {
     
-    // 刷新token值
-    const refresh_token = body.refreshToken;
-    // 解析RefreshToken
-    const payload = this.authService.verifyToken(refresh_token)
-    // 签发一个新token，
-    const accessToken = this.authService.certificate({_id:payload.sub ,name :payload.username})
-    // 获取新token里的值
-    const newPayload = this.authService.verifyToken(accessToken)
-    // 签发一个刷新token，
-    const refreshToken = this.authService.certificateRefresh({_id:payload.sub ,name :payload.username},accessToken)
-    
-    return apiAmendFormat({ 
-      accessToken,
-      refreshToken,
-      expires :newPayload.exp
-    })
-
+    try {
+      // 刷新token值
+      const refresh_token = body.refreshToken;
+      // 解析RefreshToken
+      const payload = this.authService.verifyToken(refresh_token)
+      // 签发一个新token，
+      const accessToken = this.authService.certificate({_id:payload.sub ,name :payload.username})
+      // 获取新token里的值
+      const newPayload = this.authService.verifyToken(accessToken)
+      // 签发一个刷新token，
+      const refreshToken = this.authService.certificateRefresh({_id:payload.sub ,name :payload.username},accessToken)
+      
+      return apiAmendFormat({ 
+        accessToken,
+        refreshToken,
+        expires :newPayload.exp
+      })
+    } catch (error) {
+      throw new BaseException(ResultCode.ERROR,{},error)
+    }
   }
 
   @Post('login') 
@@ -138,19 +140,19 @@ export class AuthController {
         hash_credential = encryptCredential(credential,salt)
         account = await this.accountService.create({ user_id ,identity_type :'username' ,identifier ,credential:hash_credential ,salt })
       }
+      return apiAmendFormat({ name ,avatar },{
+        isSaveOperator:true,
+        operator:{
+          user_id :user_id._id,
+          type :'注册',
+          module:'账户',
+          subject:'本站',
+          description:'注册本站用户'
+        }
+      })
     } catch (error) {
       throw new BaseException(ResultCode.ERROR,{},error)
     } 
-    return apiAmendFormat({ name ,avatar },{
-      isSaveOperator:true,
-      operator:{
-        user_id :user_id._id,
-        type :'注册',
-        module:'账户',
-        subject:'本站',
-        description:'注册本站用户'
-      }
-    })
   }
 
 }

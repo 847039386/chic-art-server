@@ -1,26 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { CreateRolePermissionDto } from './dto/create-role_permission.dto';
-import { UpdateRolePermissionDto } from './dto/update-role_permission.dto';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class RolePermissionService {
-  create(createRolePermissionDto: CreateRolePermissionDto) {
-    return 'This action adds a new rolePermission';
+
+  constructor(@InjectModel('RolePermission') private readonly rolePermissionSchema: Model<CreateRolePermissionDto>) { }
+
+  async create(createRolePermissionDto: CreateRolePermissionDto) {
+    const rolePermission = new this.rolePermissionSchema(createRolePermissionDto)
+    return await rolePermission.save()
   }
 
-  findAll() {
-    return `This action returns all rolePermission`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} rolePermission`;
-  }
-
-  update(id: number, updateRolePermissionDto: UpdateRolePermissionDto) {
-    return `This action updates a #${id} rolePermission`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} rolePermission`;
+  async remove(id: string) {
+    return await this.rolePermissionSchema.findByIdAndRemove(id);
   }
 }

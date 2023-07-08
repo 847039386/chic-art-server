@@ -2,8 +2,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { PermissionService } from './permission.service';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionAvailableDto ,UpdatePermissionDto } from './dto/update-permission.dto';
-import { ApiBody, ApiNotImplementedResponse, ApiOperation,  ApiTags } from '@nestjs/swagger';
-import { apiAmendFormat } from 'src/common/decorators/api.decorator';
+import { ApiBody, ApiNotImplementedResponse, ApiOperation,  ApiParam,  ApiTags } from '@nestjs/swagger';
+import { apiAmendFormat } from 'src/shared/utils/api.util';
 import { Types } from 'mongoose';
 import { deepClone} from 'src/shared/utils/tools.util';
 import { sonsTree ,treeFormat ,handleTree ,familyTree ,getTreeIds } from 'src/shared/utils/tree.util'
@@ -21,19 +21,19 @@ export class PermissionController {
   @ApiOperation({ summary: '创建权限', description: '创建一条权限' }) 
   async create(@Body() createPermissionDto: CreatePermissionDto) {
 
-    let permission = {
-      name:createPermissionDto.name,
-      description:createPermissionDto.description,
-      available :createPermissionDto.available || false,
-      type:createPermissionDto.type,
-      code :createPermissionDto.code,
-    }
-
-    if(createPermissionDto.parent_id){
-      permission = Object.assign(permission,{ parent_id : new Types.ObjectId(createPermissionDto.parent_id) })
-    }
-
     try {
+      let permission = {
+        name:createPermissionDto.name,
+        description:createPermissionDto.description,
+        available :createPermissionDto.available || false,
+        type:createPermissionDto.type,
+        code :createPermissionDto.code,
+      }
+  
+      if(createPermissionDto.parent_id){
+        permission = Object.assign(permission,{ parent_id : new Types.ObjectId(createPermissionDto.parent_id) })
+      }
+
       return apiAmendFormat(await this.permissionService.create(permission));
     } catch (error) {
       throw new BaseException(ResultCode.ERROR,{},error)
@@ -41,14 +41,17 @@ export class PermissionController {
     
   }
 
-  @Get('tree')
-  // @ApiAmendDecorator({ module :'权限' ,subject:'权限查询' })
-  @ApiOperation({ summary: '查询权限树', description: '查询所有权限，不分页,返回树形结构' }) 
+  @Get('list')
+  @ApiOperation({ summary: '权限列表', description: '查询所有权限，不分页' }) 
   async findAll() {
-    let result = await this.permissionService.findAll()
-    let newResult = treeFormat(result)
-    // let tree = handleTree(JSON.parse(JSON.stringify(newResult)),'_id','parent_id');
-    return apiAmendFormat(newResult,{isTakeResponse:false});
+    try {
+      let result = await this.permissionService.findAll()
+      let newResult = treeFormat(result)
+      // let tree = handleTree(JSON.parse(JSON.stringify(newResult)),'_id','parent_id');
+      return apiAmendFormat(newResult,{isTakeResponse:false});
+    } catch (error) {
+      throw new BaseException(ResultCode.ERROR,{},error)
+    }
   }
 
 
@@ -83,11 +86,10 @@ export class PermissionController {
     }
   }
 
-  @Patch('update')
+  @Patch('up_info')
   @ApiOperation({ summary: '修改权限状态', description: '设置权限是否开启，开启后则会限制，不开启将不会受限制' }) 
-  async updateById(@Body() body: UpdatePermissionDto) {
+  async updateInfo(@Body() body: UpdatePermissionDto) {
     try {
-      console.log(body)
       let id = body.id
       let code = body.code
       let description = body.description
@@ -102,12 +104,11 @@ export class PermissionController {
     }
   }
 
-  @Delete('del')
-  @ApiBody({type :DeletePermissionDto})
+  @Delete('del/:id')
   @ApiOperation({ summary: '删除权限', description: '根据id删除权限' }) 
-  async remove(@Body() body :DeletePermissionDto) {
+  @ApiParam({ name:'id' ,description:'索引id' })
+  async remove(@Param('id') id: string) {
     try {
-      let id = body.id
       if(!id){
         throw new BaseException(ResultCode.COMMON_PARAM_ERROR,{})
       }

@@ -3,7 +3,7 @@ import { ApiTags ,ApiOperation ,ApiQuery, ApiBearerAuth} from '@nestjs/swagger';
 import { RequestLogService } from './request_log.service';
 import { CreateRequestLogDto } from './dto/create-request_log.dto';
 import { UpdateRequestLogDto } from './dto/update-request_log.dto';
-import { apiAmendFormat } from 'src/common/decorators/api.decorator';
+import { apiAmendFormat } from 'src/shared/utils/api.util';
 import { BaseException, ResultCode ,OperatorException } from 'src/shared/utils/base_exception.util'
 import { AuthGuard } from '@nestjs/passport';
 
@@ -19,14 +19,18 @@ export class RequestLogController {
   @ApiQuery({ name: 'page' ,description:'当前页数'})
   @ApiOperation({ summary: '请求日志列表', description: '获取所有请求日志，带分页' }) 
   async findAll(@Query() query ) {
-    let page = 1;
-    let limit = 10;
-    page = Number(query.page) || 1
-    limit = Number(query.limit) || 10
-    let data = await this.requestLogService.findAll(page,limit);
-    return apiAmendFormat(data,{
-      isTakeResponse :false,
-    })
+    try {
+      let page = 1;
+      let limit = 10;
+      page = Number(query.page) || 1
+      limit = Number(query.limit) || 10
+      let data = await this.requestLogService.findAll(page,limit);
+      return apiAmendFormat(data,{
+        isTakeResponse :false,
+      })
+    } catch (error) {
+      throw new BaseException(ResultCode.ERROR,{},error)
+    }
   }
 
   @Delete('/cleared')

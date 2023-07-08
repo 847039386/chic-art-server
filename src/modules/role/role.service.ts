@@ -1,26 +1,39 @@
 import { Injectable } from '@nestjs/common';
 import { CreateRoleDto } from './dto/create-role.dto';
-import { UpdateRoleDto } from './dto/update-role.dto';
+import { UpdateRoleAvailableDto ,UpdateRoleInfoDto } from './dto/update-role.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class RoleService {
-  create(createRoleDto: CreateRoleDto) {
-    return 'This action adds a new role';
+
+  constructor(@InjectModel('Role') private readonly roleSchema: Model<CreateRoleDto>) { }
+
+  async create(createRoleDto: CreateRoleDto) {
+    const role = new this.roleSchema(createRoleDto)
+    return await role.save()
   }
 
-  findAll() {
-    return `This action returns all role`;
+  async findAll() {
+    return await this.roleSchema.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} role`;
+  async update(updateRoleDto: UpdateRoleInfoDto) {
+    return await this.roleSchema.findByIdAndUpdate(updateRoleDto.id ,{
+      name : updateRoleDto.name,
+      description :updateRoleDto.description
+    });
   }
 
-  update(id: number, updateRoleDto: UpdateRoleDto) {
-    return `This action updates a #${id} role`;
+  async updateAvailable(updateRoleDto: UpdateRoleAvailableDto) {
+    return await this.roleSchema.findByIdAndUpdate(updateRoleDto.id ,{
+      available :updateRoleDto.available      
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} role`;
+  remove(id: string) {
+    return this.roleSchema.findByIdAndRemove(id);
   }
+
 }
+

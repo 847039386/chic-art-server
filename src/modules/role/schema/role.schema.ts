@@ -5,7 +5,13 @@ import { Document } from 'mongoose';
 
 export type RoleDocument = Role & Document;
 
-@Schema()
+@Schema({
+    collection: 'role',
+    timestamps: {
+        createdAt: 'create_time', 
+        updatedAt: 'update_time'
+    }
+})
 export class Role extends Document {
     // 角色名称
     @Prop({ required: true })
@@ -14,14 +20,8 @@ export class Role extends Document {
     @Prop({ required: true })
     description: String
     // 0：不可用 1：可用
-    @Prop({ default : 1 })
-    available: Number
-    // 创建时间
-    @Prop({ default :Date.now })
-    create_tiem:Date
-    // 修改时间
-    @Prop({ default:Date.now })
-    update_tiem:Date
+    @Prop({ default : true })
+    available: boolean
 }
 
 export const RoleSchema = SchemaFactory.createForClass(Role);

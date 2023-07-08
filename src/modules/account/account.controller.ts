@@ -1,6 +1,6 @@
 import { Controller, Body, Patch, UseGuards, Request } from '@nestjs/common';
 import { AccountService } from './account.service';
-import { apiAmendFormat } from 'src/common/decorators/api.decorator';
+import { apiAmendFormat } from 'src/shared/utils/api.util';
 import { ApiTags ,ApiOperation, ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import { OperatorException ,ResultCode ,BaseException } from 'src/shared/utils/base_exception.util';
 import { UpdatePasswordDto } from './dto/update-password.dto';

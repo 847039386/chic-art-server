@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete ,Query, UseGuards ,Re
 import { OperatorLogService } from './operator_log.service';
 import { CreateOperatorLogDto } from './dto/create-operator_log.dto';
 import { UpdateOperatorLogDto } from './dto/update-operator_log.dto';
-import { apiAmendFormat} from 'src/common/decorators/api.decorator';
+import { apiAmendFormat} from 'src/shared/utils/api.util';
 import { ApiTags ,ApiOperation,ApiQuery ,ApiBearerAuth} from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { BaseException ,ResultCode} from 'src/shared/utils/base_exception.util';
@@ -19,14 +19,18 @@ export class OperatorLogController {
   @ApiQuery({ name: 'page' ,description:'当前页数'})
   @ApiOperation({ summary: '操作日志列表', description: '获取所有操作日志，带分页' }) 
   async findAll(@Query() query) {
-    let page = 1;
-    let limit = 10;
-    page = Number(query.page) || 1
-    limit = Number(query.limit) || 10
-    let data =  await this.operatorLogService.findAll(page,limit);
-    return apiAmendFormat(data,{
-      isTakeResponse :false,
+    try {
+      let page = 1;
+      let limit = 10;
+      page = Number(query.page) || 1
+      limit = Number(query.limit) || 10
+      let data =  await this.operatorLogService.findAll(page,limit);
+      return apiAmendFormat(data,{
+        isTakeResponse :false,
     })
+    } catch (error) {
+      throw new BaseException(ResultCode.ERROR,{},error)
+    }
   }
 
    

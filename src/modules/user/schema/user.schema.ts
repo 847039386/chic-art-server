@@ -22,12 +22,6 @@ export class User extends Document {
     // 用户头像地址
     @Prop({  })
     avatar:String
-    // 创建时间
-    @Prop({ default :Date.now })
-    create_tiem:Date
-    // 修改时间
-    @Prop({ default:Date.now })
-    update_tiem:Date
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
