@@ -26,6 +26,10 @@ export class ResultCode {
     static AUTH_TOKEN_EXPIRED = { code :20303 ,message:"token已经过期"} 
     // 权限
     static PERMISSION_PARENT_IS_CLOSE = { code :20401 ,message:"当前父级权限是关闭的"} 
+    // 角色权限
+    static ROLE_PERMISSION_IS_EXIST = { code :20501 ,message:"角色已拥有该权限"} 
+    static ROLE_PERMISSION_IS_EXIST_PARENT = { code :20502 ,message:"角色已拥有该权限的父级"} 
+
 }
 
 

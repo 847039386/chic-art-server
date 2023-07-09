@@ -5,6 +5,7 @@ import { PermissionSchema } from './schema/permission.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
+  exports:[PermissionService],
   controllers: [PermissionController],
   providers: [PermissionService],
   imports: [
