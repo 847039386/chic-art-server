@@ -17,28 +17,26 @@ export class PermissionController {
   constructor(private readonly permissionService: PermissionService) {}
 
   @Post('add')
-  // @ApiAmendDecorator({ module :'权限' ,subject:'权限添加' })
   @ApiOperation({ summary: '创建权限', description: '创建一条权限' }) 
-  async create(@Body() createPermissionDto: CreatePermissionDto) {
+  async create(@Body() dto: CreatePermissionDto) {
 
     try {
       let permission = {
-        name:createPermissionDto.name,
-        description:createPermissionDto.description,
-        available :createPermissionDto.available || false,
-        type:createPermissionDto.type,
-        code :createPermissionDto.code,
+        name:dto.name,
+        description:dto.description,
+        available :dto.available || false,
+        type:dto.type,
+        code :dto.code,
       }
   
-      if(createPermissionDto.parent_id){
-        permission = Object.assign(permission,{ parent_id : new Types.ObjectId(createPermissionDto.parent_id) })
+      if(dto.parent_id){
+        permission = Object.assign(permission,{ parent_id : new Types.ObjectId(dto.parent_id) })
       }
 
       return apiAmendFormat(await this.permissionService.create(permission));
     } catch (error) {
       throw new BaseException(ResultCode.ERROR,{},error)
     }
-    
   }
 
   @Get('list')
@@ -98,7 +96,7 @@ export class PermissionController {
       if(!id || !code || !description || !type || !name){
         throw new BaseException(ResultCode.COMMON_PARAM_ERROR,{})
       }
-      return apiAmendFormat(await this.permissionService.updateById(body));
+      return apiAmendFormat(await this.permissionService.updateInfo(body));
     } catch (error) {
       throw new BaseException(ResultCode.ERROR,{},error)
     }

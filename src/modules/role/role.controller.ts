@@ -14,9 +14,9 @@ export class RoleController {
 
   @Post('add')
   @ApiOperation({ summary: '创建角色', description: '创建角色' }) 
-  async create(@Body() createRoleDto: CreateRoleDto) {
+  async create(@Body() dto: CreateRoleDto) {
     try {
-      return apiAmendFormat(await this.roleService.create(createRoleDto));
+      return apiAmendFormat(await this.roleService.create(dto));
     } catch (error) {
       throw new BaseException(ResultCode.ERROR,{},error)
     }
@@ -34,9 +34,9 @@ export class RoleController {
 
   @Patch('up_available')
   @ApiOperation({ summary: '修改角色可用状态', description: '修改角色可用状态，来确保角色是否启用' }) 
-  async updateAvailable(@Body() updateRoleDto: UpdateRoleAvailableDto) {
+  async updateAvailable(@Body() dto: UpdateRoleAvailableDto) {
     try {
-      return apiAmendFormat(await this.roleService.updateAvailable(updateRoleDto));
+      return apiAmendFormat(await this.roleService.updateAvailable(dto));
     } catch (error) {
       throw new BaseException(ResultCode.ERROR,{},error)
     }
@@ -44,9 +44,9 @@ export class RoleController {
 
   @Patch('up_info')
   @ApiOperation({ summary: '修改角色信息', description: '修改角色的信息，包括角色名称和角色描述' }) 
-  async updateInfo(@Body() updateRoleDto: UpdateRoleInfoDto) {
+  async updateInfo(@Body() dto: UpdateRoleInfoDto) {
     try {
-      return apiAmendFormat(await this.roleService.update(updateRoleDto));
+      return apiAmendFormat(await this.roleService.updateInfo(dto));
     } catch (error) {
       throw new BaseException(ResultCode.ERROR,{},error)
     }

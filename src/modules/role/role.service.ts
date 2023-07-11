@@ -61,16 +61,16 @@ export class RoleService {
 
   }
 
-  async update(updateRoleDto: UpdateRoleInfoDto) {
-    return await this.roleSchema.findByIdAndUpdate(updateRoleDto.id ,{
-      name : updateRoleDto.name,
-      description :updateRoleDto.description
+  async updateInfo(dto: UpdateRoleInfoDto) {
+    return await this.roleSchema.findByIdAndUpdate(dto.id ,{
+      name : dto.name,
+      description :dto.description
     });
   }
 
-  async updateAvailable(updateRoleDto: UpdateRoleAvailableDto) {
-    return await this.roleSchema.findByIdAndUpdate(updateRoleDto.id ,{
-      available :updateRoleDto.available      
+  async updateAvailable(dto: UpdateRoleAvailableDto) {
+    return await this.roleSchema.findByIdAndUpdate(dto.id ,{
+      available :dto.available      
     });
   }
 

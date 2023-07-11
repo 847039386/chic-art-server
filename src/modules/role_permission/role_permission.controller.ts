@@ -17,6 +17,11 @@ export class RolePermissionController {
   @ApiOperation({ summary: '给角色添加权限', description: '给角色添加一条权限，一个角色有多条权限' }) 
   async create(@Body() dto: CreateRolePermissionDto) {
     try {
+      
+      if(!dto.permission_id || !dto.role_id){
+        throw new BaseException(ResultCode.COMMON_PARAM_ERROR,{})
+      }
+      
       if(await this.rolePermissionService.isExist(dto)){
         throw new BaseException(ResultCode.ROLE_PERMISSION_IS_EXIST,{})
       }else{

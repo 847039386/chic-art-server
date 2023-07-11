@@ -7,7 +7,13 @@ import { UserGroup } from '../../user_group/schema/user_group.schema';
 
 export type UserGroupRoleDocument = UserGroupRole & Document;
 
-@Schema()
+@Schema({
+    collection: 'user_group_role',
+    timestamps: {
+        createdAt: 'create_time', 
+        updatedAt: 'update_time'
+    }
+})
 export class UserGroupRole extends Document {
     // 角色ID
     @Prop({ type: Types.ObjectId, ref: 'Role' ,required: true })
@@ -15,12 +21,6 @@ export class UserGroupRole extends Document {
     // 用户组ID
     @Prop({ type: Types.ObjectId, ref: 'UserGroup' ,required: true })
     user_group_id: UserGroup
-    // 创建时间
-    @Prop({ default :Date.now })
-    create_tiem:Date
-    // 修改时间
-    @Prop({ default:Date.now })
-    update_tiem:Date
 }
 
 export const UserGroupRoleSchema = SchemaFactory.createForClass(UserGroupRole);

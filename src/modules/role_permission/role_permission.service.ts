@@ -10,8 +10,12 @@ export class RolePermissionService {
 
   // 创建一条权限
   async create(dto: CreateRolePermissionDto) {
-    let role_id = new Types.ObjectId(dto.role_id)
-    let permission_id = new Types.ObjectId(dto.permission_id)
+    let role_id;
+    let permission_id;
+    if(dto.role_id && dto.permission_id){
+      role_id = new Types.ObjectId(dto.role_id)
+      permission_id = new Types.ObjectId(dto.permission_id)
+    }
     const rolePermission = new this.rolePermissionSchema({role_id,permission_id})
     return await rolePermission.save()
   }

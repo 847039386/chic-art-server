@@ -17,10 +17,10 @@ export type RolePermissionDocument = RolePermission & Document;
 export class RolePermission extends Document {
     // 角色ID
     @Prop({ type: Types.ObjectId, ref: 'Role' ,required: true})
-    role_id: Role
+    role_id: Types.ObjectId
     // 权限ID
     @Prop({ type: Types.ObjectId, ref: 'Permission' ,required: true })
-    permission_id: Permission
+    permission_id: Types.ObjectId
 }
 
 export const RolePermissionSchema = SchemaFactory.createForClass(RolePermission);

@@ -16,8 +16,8 @@ export class PermissionService {
   }
 
 
-  findAll() {
-    return this.requestLogSchema.find({},{}).lean()
+  async findAll() {
+    return await this.requestLogSchema.find({},{}).lean()
   }
 
   // 此方法接受一个id数组
@@ -33,7 +33,7 @@ export class PermissionService {
     return await this.requestLogSchema.deleteMany({_id: {$in: ids}});
   }
 
-  async updateById(dto :UpdatePermissionDto) {
+  async updateInfo(dto :UpdatePermissionDto) {
     return await this.requestLogSchema.findByIdAndUpdate(dto.id,{
       name :dto.name,
       description :dto.description,

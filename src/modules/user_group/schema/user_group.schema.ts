@@ -12,31 +12,29 @@ import { Document ,Types } from 'mongoose';
 
 export type UserGroupDocument = UserGroup & Document;
 
-@Schema()
+@Schema({
+    collection: 'user_group',
+    timestamps: {
+        createdAt: 'create_time', 
+        updatedAt: 'update_time'
+    }
+})
 export class UserGroup extends Document {
     // 用户组名称
     @Prop({ required: true })
     name: String
+    // 类型，0为可访问 1是可授权
+    @Prop({ default: 0 })
+    type: number
     // 描述
     @Prop({ required: true })
     description: String
     // true：开启 false、不开启
     @Prop({ default : true })
     available: Boolean
-    // true:可选 false、不可选
-    @Prop({ default : false })
-    optional:Boolean
     // 父节点，指向自己
     @Prop({ type: Types.ObjectId, ref: 'UserGroup' })
     parent_id: UserGroup
-    // 创建时间
-    @Prop({ default :Date.now })
-    create_tiem:Date
-    // 修改时间
-    @Prop({ default:Date.now })
-    update_tiem:Date
-
-
 }
 
 export const UserGroupSchema = SchemaFactory.createForClass(UserGroup);
