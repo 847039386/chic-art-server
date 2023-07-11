@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, Param, Delete } from '@nestjs/common';
 import { RolePermissionService } from './role_permission.service';
 import { CreateRolePermissionDto } from './dto/create-role_permission.dto';
-import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiTags ,ApiQuery } from '@nestjs/swagger';
 import { apiAmendFormat } from 'src/shared/utils/api.util';
 import { BaseException, ResultCode } from 'src/shared/utils/base_exception.util';
 import { PermissionService } from '../permission/permission.service';
@@ -58,10 +58,10 @@ export class RolePermissionController {
   }
   
 
-  @Delete('del/:id')
-  @ApiParam({ name :'id' , description:'角色权限的id' })
+  @Delete('del')
+  @ApiQuery({ name :'id' , description:'角色权限的id' })
   @ApiOperation({ summary: '删除角色的权限', description: '删除角色的一条权限，一个用户有多条权限，该删除只删除一条权限' }) 
-  async remove(@Param('id') id: string) {
+  async remove(@Query('id') id: string) {
     try {
       return apiAmendFormat(await this.rolePermissionService.remove(id));
     } catch (error) {
@@ -69,10 +69,10 @@ export class RolePermissionController {
     }
   }
 
-  @Get('permissions/:role_id')
-  @ApiParam({ name :'role_id' , description:'角色id' })
+  @Get('permissions')
+  @ApiQuery({ name :'role_id' , description:'角色id' })
   @ApiOperation({ summary: '角色拥有的权限', description: '根据角色ID查询角色下所有的权限' }) 
-  async findAll(@Param('role_id') role_id: string) {
+  async findAll(@Query('role_id') role_id: string) {
     try {
       return apiAmendFormat(await this.rolePermissionService.getPermissionByRoleId(role_id));
     } catch (error) {

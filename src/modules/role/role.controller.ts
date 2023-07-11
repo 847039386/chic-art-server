@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { RoleService } from './role.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleInfoDto ,UpdateRoleAvailableDto } from './dto/update-role.dto';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags ,ApiQuery } from '@nestjs/swagger';
 import { apiAmendFormat } from 'src/shared/utils/api.util';
 import { BaseException, ResultCode } from 'src/shared/utils/base_exception.util';
 
@@ -52,9 +52,10 @@ export class RoleController {
     }
   }
 
-  @Delete('del/:id')
-  @ApiOperation({ summary: '查询权限树', description: '查询所有权限，不分页,返回树形结构' }) 
-  async remove(@Param('id') id: string) {
+  @Delete('del')
+  @ApiQuery({ name: 'id' ,description:'角色ID'})
+  @ApiOperation({ summary: '删除角色', description: '根据角色ID，删除角色' }) 
+  async remove(@Query('id') id: string) {
     try {
       return apiAmendFormat(await this.roleService.remove(id));
     } catch (error) {

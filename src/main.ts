@@ -12,6 +12,7 @@ import { RequestLogService } from './modules/request_log/request_log.service';
 import { join } from 'path';
 import { JwtAuthGuard } from './common/guard/jwt-auth.guard';
 import { AuthService } from './modules/auth/auth.service';
+import { PermissionAuth } from './common/guard/permission-auth.guard';
 
 async function bootstrap() {
 
@@ -32,6 +33,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(new RequestInterceptor(requestLogService,operatorLogService));
   // 全局守卫
   // app.useGlobalGuards(new JwtAuthGuard(authService))
+  app.useGlobalGuards(new PermissionAuth())
   // 全局中间件
   app.use(new ResponseStartTime().use)
   // 静态路径

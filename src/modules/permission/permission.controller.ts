@@ -1,15 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete ,Query } from '@nestjs/common';
 import { PermissionService } from './permission.service';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionAvailableDto ,UpdatePermissionDto } from './dto/update-permission.dto';
-import { ApiBody, ApiNotImplementedResponse, ApiOperation,  ApiParam,  ApiTags } from '@nestjs/swagger';
+import { ApiQuery, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { apiAmendFormat } from 'src/shared/utils/api.util';
 import { Types } from 'mongoose';
-import { deepClone} from 'src/shared/utils/tools.util';
-import { sonsTree ,treeFormat ,handleTree ,familyTree ,getTreeIds } from 'src/shared/utils/tree.util'
-
+import { sonsTree ,treeFormat ,familyTree ,getTreeIds } from 'src/shared/utils/tree.util'
 import { BaseException, ResultCode } from 'src/shared/utils/base_exception.util';
-import { DeletePermissionDto } from './dto/delete-permission.dto';
 
 @Controller('api/permission')
 @ApiTags('权限接口') 
@@ -45,7 +42,6 @@ export class PermissionController {
     try {
       let result = await this.permissionService.findAll()
       let newResult = treeFormat(result)
-      // let tree = handleTree(JSON.parse(JSON.stringify(newResult)),'_id','parent_id');
       return apiAmendFormat(newResult,{isTakeResponse:false});
     } catch (error) {
       throw new BaseException(ResultCode.ERROR,{},error)
@@ -102,10 +98,10 @@ export class PermissionController {
     }
   }
 
-  @Delete('del/:id')
+  @Delete('del')
+  @ApiQuery({ name: 'id' ,description:'权限ID'})
   @ApiOperation({ summary: '删除权限', description: '根据id删除权限' }) 
-  @ApiParam({ name:'id' ,description:'索引id' })
-  async remove(@Param('id') id: string) {
+  async remove(@Query('id') id: string) {
     try {
       if(!id){
         throw new BaseException(ResultCode.COMMON_PARAM_ERROR,{})

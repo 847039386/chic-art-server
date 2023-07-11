@@ -1,9 +1,9 @@
 import { Types } from 'mongoose';
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { UserGroupService } from './user_group.service';
 import { CreateUserGroupDto } from './dto/create-user_group.dto';
 import { UpdateUserGroupAvailableDto, UpdateUserGroupInfoDto } from './dto/update-user_group.dto';
-import { ApiTags ,ApiOperation ,ApiParam } from '@nestjs/swagger';
+import { ApiTags ,ApiOperation ,ApiParam ,ApiQuery } from '@nestjs/swagger';
 import { BaseException, ResultCode } from 'src/shared/utils/base_exception.util';
 import { apiAmendFormat } from 'src/shared/utils/api.util';
 import { familyTree, getTreeIds, sonsTree, treeFormat } from 'src/shared/utils/tree.util';
@@ -103,10 +103,10 @@ export class UserGroupController {
 
 
 
-  @Delete('del/:id')
+  @Delete('del')
+  @ApiQuery({ name: 'id' ,description:'用户组ID'})
   @ApiOperation({ summary: '删除用户组', description: '根据id删除用户组' }) 
-  @ApiParam({ name:'id' ,description:'索引id' })
-  async remove(@Param('id') id: string) {
+  async remove(@Query('id') id: string) {
     try {
       if(!id){
         throw new BaseException(ResultCode.COMMON_PARAM_ERROR,{})
