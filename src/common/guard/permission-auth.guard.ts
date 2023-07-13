@@ -20,8 +20,8 @@ import {
       const res = context.switchToHttp().getResponse();
       try {
         // 获取token Authorization
-        console.log(req.url)
-        console.log(req.path)
+        // console.log(req.url)
+        // console.log(req.path)
         return true
       } catch (e) {
         throw new BaseException(ResultCode.ERROR,{},e)

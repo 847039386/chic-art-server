@@ -72,7 +72,11 @@ export class BaseException {
             if(error.code){
                 this.code = error.code
             }
-            this.e_message = error.message
+            if(error.e_message){
+                this.e_message = error.e_message
+            }else{
+                this.e_message = error.message
+            }
         }
     }
 }

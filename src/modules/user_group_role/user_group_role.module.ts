@@ -6,7 +6,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UserGroupModule } from '../user_group/user_group.module';
 
 @Module({
-  exports:[UserGroupRoleService],
+  exports:[
+    UserGroupRoleService,
+    MongooseModule.forFeature([{ name: 'UserGroupRole', schema: UserGroupRoleSchema }]),
+  ],
   controllers: [UserGroupRoleController],
   providers: [UserGroupRoleService],
   imports: [

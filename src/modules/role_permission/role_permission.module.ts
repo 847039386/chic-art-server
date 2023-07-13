@@ -5,6 +5,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { RolePermissionSchema } from './schema/role_permission.schema';
 import { PermissionModule } from '../permission/permission.module';
 @Module({
+  exports :[
+    MongooseModule.forFeature([{ name: 'RolePermission', schema: RolePermissionSchema }]),
+  ],
   controllers: [RolePermissionController],
   providers: [RolePermissionService],
   imports: [
