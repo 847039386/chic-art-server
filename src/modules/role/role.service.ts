@@ -83,33 +83,22 @@ export class RoleService {
   }
   
   async remove(id: string) {
-    let session = await this.roleSchema.startSession(); 
-    let session2 = await this.rolePermissionSchema.startSession();
-    let session3 = await this.rolePermissionSchema.startSession();
+    let session = await this.connection.startSession(); 
     session.startTransaction();
-    session2.startTransaction();
-    session3.startTransaction();
     let result;
     try {
       // 删除角色ID
-      result = this.roleSchema.findByIdAndRemove(id);
+      result = await this.roleSchema.findByIdAndRemove(id).session(session)
       // 删除与角色权限表的关联
-      await this.rolePermissionSchema.deleteMany({ role_id : new Types.ObjectId(id)})
-      // 删除与用户组角色直接按的关联
-      console.log(await this.userGroupRoleSchema.deleteMany({ role_id : new Types.ObjectId('id') }))
+      await this.rolePermissionSchema.deleteMany({ role_id : new Types.ObjectId(id)}).session(session)
+      // 删除与用户组角色的关联
+      await this.userGroupRoleSchema.deleteMany({ role_id : new Types.ObjectId(id) }).session(session)
       await session.commitTransaction();
-      await session2.commitTransaction();
-      await session3.commitTransaction();
     } catch (error) {
       await session.abortTransaction();
-      await session2.abortTransaction();
-      await session3.abortTransaction();
       throw new BaseException(ResultCode.ERROR,{},error)
-    } finally {
-      console.log('finally')
-      session.endSession();
-      session2.endSession();
-      session3.endSession();
+    }finally {
+      await session.endSession();
     }
     return result;
   }

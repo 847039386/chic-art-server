@@ -59,6 +59,7 @@ export class RoleController {
     try {
       return apiAmendFormat(await this.roleService.remove(id));
     } catch (error) {
+      console.log(error,'?????')
       throw new BaseException(ResultCode.ERROR,{},error)
     }
   }
