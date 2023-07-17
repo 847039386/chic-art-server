@@ -9,5 +9,19 @@ export class CreateUserDto {
     @IsString()
     @ApiProperty({ description: '用户头像', type: String })
     avatar :String
-  
+}
+
+export class SearchUserDto {
+    @ApiProperty({ description: '页数', type: Number })
+    @IsInt()
+    page ?:number
+    @ApiProperty({ description: '每页数量', type: Number })
+    @IsInt()
+    limit ?:number
+    @ApiProperty({ description: '用户名称模糊查询', type: String })
+    @IsString()
+    name ?:string
+    @ApiProperty({ description: '用户状态', type: Number })
+    @IsString()
+    state ?:number
 }

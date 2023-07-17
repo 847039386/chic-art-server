@@ -58,7 +58,7 @@ export class PermissionService {
       await session.abortTransaction();
       throw new BaseException(ResultCode.ERROR,{},error)
     }finally{
-      session.endSession();
+      await session.endSession();
     }
     return result;
 

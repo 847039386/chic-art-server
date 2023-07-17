@@ -37,6 +37,13 @@ replication:
 
 3. 重启 MongoDB 服务
 4. 进入 MongoDB 的 bin 目录，cmd 执行 mongo 命令，执行 rs.initiate() 初始化复制集
+
+```bash
+rs.initiate() 
+rs.secondaryOk()
+```
+
+
 5. 可能会提示需要身份验证
 
 ```bash

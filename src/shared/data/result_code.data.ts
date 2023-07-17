@@ -33,7 +33,9 @@ export class ResultCode {
     static USER_GROUP_BAN_PARENT_ADD_ROLE = { code :20601 ,message:"用户组禁止父级添加角色"} 
     // 用户组角色
     static USER_GROUP_ROLE_IS_EXIST = { code :20701 ,message:"用户组已拥有该角色"} 
-
+    // 用户组用户
+    static USER_GROUP_USER_IS_EXIST = { code :20801 ,message:"用户已加入该用户组"} 
+    static USER_GROUP_USER_IS_EXIST_PARENT = { code :20502 ,message:"用户已加入了该用户组的父级"} 
 }
 
 

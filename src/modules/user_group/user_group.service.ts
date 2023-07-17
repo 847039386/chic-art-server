@@ -6,6 +6,7 @@ import mongoose ,{ Model, Types } from 'mongoose';
 import { getTreeIds, sonsTree, treeFormat } from 'src/shared/utils/tree.util';
 import { CreateUserGroupRoleDto } from '../user_group_role/dto/create-user_group_role.dto';
 import { BaseException, ResultCode } from 'src/shared/utils/base_exception.util';
+import { CreateUserGroupUserDto } from '../user_group_user/dto/create-user_group_user.dto';
 
 @Injectable()
 export class UserGroupService {
@@ -13,6 +14,7 @@ export class UserGroupService {
   constructor(
     @InjectModel('UserGroup') private readonly userGroupSchema: Model<CreateUserGroupDto>,
     @InjectModel('UserGroupRole') private readonly userGroupRoleSchema: Model<CreateUserGroupRoleDto>,
+    @InjectModel('UserGroupUser') private readonly userGroupUserSchema: Model<CreateUserGroupUserDto>,
     @InjectConnection() private readonly connection: mongoose.Connection
     ){}
 
@@ -103,12 +105,14 @@ export class UserGroupService {
       })
       // 删除用户组角色表中与该组关联的角色，包括组和组的子集
       await this.userGroupRoleSchema.deleteMany({ user_group_id : {$in: o_ids } }).session(session)
+      // 删除与用户组用户表中与该组关联的用户，包括组和组的子集
+      await this.userGroupUserSchema.deleteMany({ user_group_id : {$in: o_ids } }).session(session)
       await session.commitTransaction();
     } catch (error) {
       await session.abortTransaction();
       throw new BaseException(ResultCode.ERROR,{},error)
     }finally{
-      session.endSession();
+      await session.endSession();
     }
     return result;
   }
