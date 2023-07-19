@@ -74,6 +74,26 @@ export class PermissionService {
     })
   }
 
+  /**
+   * 此方法传入一个api，当权限添加了这个api，权限自动启动
+   * 会根据这个api查找到api的父级成员包括他子集，
+   * 该方法返回这个api与api的父级成员。
+   * 逻辑判断当用户的权限包含 这个api或者他父级的时候验证通过页面
+   * @param api 
+   * @returns 
+   */
+  async apiVerify(api :string){
+    // 查找所有权限
+    let permissionAll = treeFormat(await this.permissionSchema.find({},{}).lean())
+    let permission = await this.permissionSchema.findOne({ type :'API' ,code :api ,available:true })
+    if(permission){
+      let permission_id = permission._id;
+      let family =  familyTree(permissionAll,permission_id) 
+      return family
+    }else{
+      return [];
+    }
+  }
 }
 
 

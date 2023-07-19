@@ -11,13 +11,18 @@ import {
   import { AppModule } from 'src/app.module';
   import { BaseException, ResultCode } from 'src/shared/utils/base_exception.util';
   import { allRouter } from 'src/shared/data/router.data';
+  import { PermissionService } from 'src/modules/permission/permission.service';
   /**
    * @guard文件作用:守卫
    */
   
   @Injectable()
   export class JwtAuthGuard extends AuthGuard('jwt') {
-    constructor(private readonly authService: AuthService) {
+    constructor(
+      private readonly authService: AuthService ,
+      private readonly permissionService: PermissionService,
+      private readonly userService: UserService,
+      ) {
       super()
     }
   
@@ -31,28 +36,39 @@ import {
       
       try {
         // 获取token Authorization
-        const accessToken = req.get('Authorization');
-        if(!accessToken){
-          throw new BaseException(ResultCode.AUTH_TOKEN_ERROR,{})
+        const pfam = await this.permissionService.apiVerify(req.path)
+        // 当权限并未添加的时候直接通过权限
+        if(pfam.length == 0 ){
+          return true;
         }else{
-          const user = await this.authService.verifyToken(accessToken);
-          console.log(user,'??????')
-          // console.log(req.user,'aaaaaaa')
+          const accessToken = req.get('Authorization');
+          if(!accessToken){
+            throw new BaseException(ResultCode.AUTH_TOKEN_ERROR,{})
+          }else{
+            const user = await this.authService.verifyToken(accessToken);
+            const uid = user.sub;
+            const u_urp = await this.userService.getUserURP(uid);
+            const u_p = u_urp.permissions
+            let verify = false;
+            for (let index = 0; index < pfam.length; index++) {
+              const element = pfam[index];
+              for (let jndex = 0; jndex < u_p.length; jndex++) {
+                const up_element = u_p[jndex];
+                if(element._id == up_element._id.toString()){
+                  verify = true;
+                  break;
+                }
+              }
+            }
+            if(verify){
+              return true
+            }else{
+              console.log('无权限')
+              throw new BaseException(ResultCode.PERMISSION_NO,{})
+              return false
+            }
+          }
         }
-        
-        // if (!accessToken) throw new UnauthorizedException('请先登录');
-
-        // 获取id
-        // @ts-ignore
-        // const app = await NestFactory.create<NestExpressApplication>(AppModule);
-        // const authService = app.get(AuthService);
-        // const userService = app.get(UserService);
-        // const user = await authService.verifyToken(accessToken);
-        // if (Object.keys(user).length > 0) {
-        //   const resData = await userService.userfindOne(user.sub);
-        //   if (resData.code === 200) return true;
-        // }
-        return true
       } catch (e) {
         throw new BaseException(ResultCode.ERROR,{},e)
         return false;

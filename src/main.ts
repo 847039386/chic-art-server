@@ -13,6 +13,8 @@ import { join } from 'path';
 import { JwtAuthGuard } from './common/guard/jwt-auth.guard';
 import { AuthService } from './modules/auth/auth.service';
 import { PermissionAuth } from './common/guard/permission-auth.guard';
+import { PermissionService } from './modules/permission/permission.service';
+import { UserService } from './modules/user/user.service';
 
 async function bootstrap() {
 
@@ -27,13 +29,15 @@ async function bootstrap() {
   .build()));
 
   var authService = app.get<AuthService>(AuthService)
+  var userService = app.get<UserService>(UserService)
   var requestLogService = app.get<RequestLogService>(RequestLogService)
   var operatorLogService = app.get<OperatorLogService>(OperatorLogService) 
+  var permissionService = app.get<PermissionService>(PermissionService) 
   app.useGlobalFilters(new AllExceptionsFilter() ,new HttpExceptionFilter(requestLogService) ,new OperatorExceptionsFilter(requestLogService,operatorLogService));
   app.useGlobalInterceptors(new RequestInterceptor(requestLogService,operatorLogService));
   // 全局守卫
-  // app.useGlobalGuards(new JwtAuthGuard(authService))
-  app.useGlobalGuards(new PermissionAuth())
+  app.useGlobalGuards(new JwtAuthGuard(authService ,permissionService,userService))
+  // app.useGlobalGuards(new PermissionAuth())
   // 全局中间件
   app.use(new ResponseStartTime().use)
   // 静态路径

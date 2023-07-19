@@ -6,6 +6,7 @@ import { UpdateUserInfoDto ,UpdateUserStateDto} from './dto/update-user.dto';
 import { CreateUserGroupUserDto } from '../user_group_user/dto/create-user_group_user.dto';
 import { CreateUserGroupRoleDto } from '../user_group_role/dto/create-user_group_role.dto';
 import { sonsTree, treeFormat } from 'src/shared/utils/tree.util';
+import { CreateRolePermissionDto } from '../role_permission/dto/create-role_permission.dto';
 
 
 @Injectable()
@@ -16,6 +17,7 @@ export class UserService {
     @InjectModel('UserGroup') private readonly userGroupSchema: Model<CreateUserGroupUserDto>,
     @InjectModel('UserGroupUser') private readonly userGroupUserSchema: Model<CreateUserGroupUserDto>,
     @InjectModel('UserGroupRole') private readonly userGroupRoleSchema: Model<CreateUserGroupRoleDto>,
+    @InjectModel('RolePermission') private readonly rolePermissionSchema: Model<CreateRolePermissionDto>,
   ) { }
   
   async create(createUserDto: CreateUserDto) {
@@ -24,7 +26,6 @@ export class UserService {
   }
 
   async findAll(dto :SearchUserDto) {
-    
     let match = {}
     let page = dto.page || 1
     let limit = dto.limit || 10
@@ -136,23 +137,81 @@ export class UserService {
     })
   }
 
+  /**
+   * 该方法返回用户所在的用户组包括子组，用户的所有权限，用户的所有角色，这里不返回没有开启的角色用户组与权限
+   * @param user_id 用户ID
+   * @returns 
+   */
   async getUserURP (user_id) {
-    let user_group_all = await this.userGroupSchema.find({},{ _id :1,parent_id:1,name:1}).lean()
-    
+    let user_group_all = await this.userGroupSchema.find({available:true},{ _id :1,parent_id:1,name:1 ,available :1}).lean()
     let user_group = await this.userGroupUserSchema.find({ user_id :new Types.ObjectId(user_id) }).populate('user_group_id')
-    let user_group_ids = []
-    let user_group_role = []
-    let children_s = []
+    let allUserGroup = []
+    let allUserGroupIds = []
+    let roles = []
+    let permissions = []
     if(user_group && user_group.length > 0){
+      // 获取用户所在的用户组包括这个用户组以下所有的子集，子集即存在父级便拥有
       user_group.forEach((element :any) => {
-        user_group_ids.push(element.user_group_id)
-        let children = sonsTree(treeFormat(user_group_all),element.user_group_id._id).concat({ _id :element.user_group_id._id ,name:element.user_group_id.name ,parent_id:element.user_group_id.parent_id})
-        children_s.push(children)
+        let children = sonsTree(treeFormat(user_group_all),element.user_group_id._id)
+        if(element.user_group_id.available){
+          allUserGroup.push({_id :element.user_group_id._id ,name:element.user_group_id.name ,parent_id: element.user_group_id.parent_id || null })
+        }
+        if(children.length > 0){
+         
+          children.forEach((item) => {
+            allUserGroup.push({_id :item._id ,name:item.name ,parent_id: item.parent_id || null})
+          })
+        }
       })
+      // 同上把所有子集与父级的id获取存在allUserGroupIds数组里
+      if(allUserGroup.length > 0){
+        allUserGroup.forEach((element) => {
+          allUserGroupIds.push(element._id)
+        })
+      }
+      // 根据用户所在用户组查找用户所拥有的所有角色
+      if(allUserGroupIds.length > 0){
+        let objeids = []
+        allUserGroupIds.forEach(element => {
+          objeids.push(new Types.ObjectId(element))
+        });
+        let u_roles = await this.userGroupRoleSchema.find({ user_group_id :{$in: objeids} }).populate({path:'role_id',select:{ name:1 , available :1}}).select({role_id:1,_id:0})
+        if(u_roles.length > 0){
+          u_roles.forEach((element :any) => {
+            if(element.role_id.available){
+              roles.push({_id :element.role_id._id ,name :element.role_id.name })
+            }
+          })
+        }
+      }
+      // 根据所拥有的角色查看用户所拥有的所有权限
+      if(roles.length > 0){
+        let objeids = [];
+        roles.forEach((element :any) => {
+          objeids.push(new Types.ObjectId(element._id))
+        })
+        let u_permissions = await this.rolePermissionSchema.find({ role_id :{$in: objeids} }).populate({path:'permission_id',select:{ name:1 ,code:1 , available :1}}).select({permission_id:1,_id:0})
+        u_permissions.forEach((element :any) => {
+          if(element.permission_id.available){
+            permissions.push({_id :element.permission_id._id ,name :element.permission_id.name , code :element.permission_id.code })
+          }
+        })
+      }
 
-      user_group_role = await this.userGroupRoleSchema.find({ user_group_id :{$in: user_group_ids} })
+      /**
+       * 因为每个角色可能会有相同的权限，这里将权限去重。
+       * 这里的权限可能是父级也可能是子集 所有在判断权限的时候先去数据库查找是否有这条权限在根据权限去查找这个权限的父级。
+       * 权限与权限父级有一条存在即可通过，具体逻辑查看守卫
+       */
+      if(permissions.length > 0){
+        let peobje = {}
+        permissions = permissions.reduce(function (item, next) {
+          peobje[next._id] ? '' : peobje[next._id] = true && item.push(next)
+          return item
+        }, [])
+      }
+      
     }
-
-    return {user_group_ids,children_s}
+    return {groups :allUserGroup ,roles ,permissions}
   }
 }
