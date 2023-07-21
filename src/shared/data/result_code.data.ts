@@ -36,7 +36,12 @@ export class ResultCode {
     static USER_GROUP_ROLE_IS_EXIST = { code :20701 ,message:"用户组已拥有该角色"} 
     // 用户组用户
     static USER_GROUP_USER_IS_EXIST = { code :20801 ,message:"用户已加入该用户组"} 
-    static USER_GROUP_USER_IS_EXIST_PARENT = { code :20502 ,message:"用户已加入了该用户组的父级"} 
+    static USER_GROUP_USER_IS_EXIST_PARENT = { code :20802 ,message:"用户已加入了该用户组的父级"} 
+    // 标签
+    static TAG_IS_EXIST = { code :20901 ,message:"标签名称重复"} 
+    // 公司
+    static COMPANY_IS_EXIST = { code :21001 ,message:"公司名称已被注册"} 
+    static COMPANY_USER_IS_EXIST = { code :21002 ,message:"每个用户只允许注册一家公司"} 
 }
 
 

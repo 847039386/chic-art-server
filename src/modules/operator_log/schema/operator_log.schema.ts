@@ -14,7 +14,7 @@
 
 import { Document ,Types } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { User } from '../../user/schema/user.schema'
+import { User } from 'src/modules/user/schema/user.schema'
 
 export type OperatorLogDocument = OperatorLog & Document;
 

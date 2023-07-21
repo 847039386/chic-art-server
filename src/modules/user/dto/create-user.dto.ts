@@ -12,10 +12,10 @@ export class CreateUserDto {
 }
 
 export class SearchUserDto {
-    @ApiProperty({ description: '页数', type: Number })
+    @ApiProperty({ description: '页数', type: Number ,example :1 })
     @IsInt()
     page ?:number
-    @ApiProperty({ description: '每页数量', type: Number })
+    @ApiProperty({ description: '每页数量', type: Number ,example :10 })
     @IsInt()
     limit ?:number
     @ApiProperty({ description: '用户名称模糊查询', type: String })

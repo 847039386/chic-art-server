@@ -11,9 +11,10 @@ import { UserGroupModule } from './modules/user_group/user_group.module';
 import { UserGroupRoleModule } from './modules/user_group_role/user_group_role.module';
 import { UserGroupUserModule } from './modules/user_group_user/user_group_user.module';
 import { OperatorLogModule } from './modules/operator_log/operator_log.module';
-import { SystemLogModule } from './modules/system_log/system_log.module';
 import { RequestLogModule } from './modules/request_log/request_log.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { CompanyModule } from './modules/company/company.module';
+import { TagModule } from './modules/tag/tag.module';
 
 @Module({
   imports: [
@@ -28,8 +29,9 @@ import { AuthModule } from './modules/auth/auth.module';
     UserGroupRoleModule,
     UserGroupUserModule,
     OperatorLogModule,
-    SystemLogModule,
     RequestLogModule,
+    CompanyModule,
+    TagModule,
   ],
   controllers: [AppController],
   providers: [AppService],

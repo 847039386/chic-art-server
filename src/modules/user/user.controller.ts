@@ -12,8 +12,6 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('list')
-  @ApiQuery({ name: 'limit', description:'每页数量'})
-  @ApiQuery({ name: 'page' ,description:'当前页数'})
   @ApiOperation({ summary: '用户列表', description: '返回用户列表，带分页' }) 
   async findAll(@Body() dto :SearchUserDto) {
     
