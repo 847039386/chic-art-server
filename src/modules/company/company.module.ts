@@ -5,6 +5,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { CompanySchema } from './schema/company.schema';
 
 @Module({
+  exports:[
+    MongooseModule.forFeature([{ name: 'Company', schema: CompanySchema }])
+  ],
   controllers: [CompanyController],
   providers: [CompanyService],
   imports: [

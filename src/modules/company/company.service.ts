@@ -18,6 +18,7 @@ export class CompanyService {
       user_id: new Types.ObjectId(dto.user_id),
       name : dto.name,
       description :dto.description,
+      tag_ids :dto.tag_ids
     })
     return await tag.save()
   }
@@ -60,13 +61,9 @@ export class CompanyService {
     return await this.companySchema.findByIdAndRemove(id)
   }
 
-  async findAll(page :number ,limit :number ,match ? :object) {
+  async findAll(page :number ,limit :number ,options ? :object) {
     const curd = new CURD(this.companySchema)
-    if(!match){
-      return curd.pagination(page,limit,{ populate:'user_id' });
-    }else{
-      return curd.pagination(page,limit,{ populate:'user_id' ,conditions: match });
-    }
+    return curd.pagination(page,limit,options || {});
   }
 
   // 审核通过则更改值

@@ -15,6 +15,7 @@ import { RequestLogModule } from './modules/request_log/request_log.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CompanyModule } from './modules/company/company.module';
 import { TagModule } from './modules/tag/tag.module';
+import { CameraModule } from './modules/camera/camera.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { TagModule } from './modules/tag/tag.module';
     RequestLogModule,
     CompanyModule,
     TagModule,
+    CameraModule,
   ],
   controllers: [AppController],
   providers: [AppService],

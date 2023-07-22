@@ -56,7 +56,7 @@ export class CompanyController {
       if(typeof dto.censor != 'undefined' && dto.censor != null){
         match = Object.assign(match,{ censor :dto.censor})
       }
-      let data =  await this.companyService.findAll(page,limit,match);
+      let data =  await this.companyService.findAll(page,limit,{ populate:'user_id tag_ids' ,conditions: match });
       return apiAmendFormat(data,{
         isTakeResponse :false,
     })
@@ -82,7 +82,7 @@ export class CompanyController {
       }else{
         match = Object.assign(match,{ censor :{$in: [1,2]}})
       }
-      let data =  await this.companyService.findAll(page,limit,match);
+      let data =  await this.companyService.findAll(page,limit,{ populate:'user_id' ,conditions: match });
       return apiAmendFormat(data,{
         isTakeResponse :false,
     })
@@ -131,11 +131,6 @@ export class CompanyController {
       throw new BaseException(ResultCode.ERROR,{},error)
     }
   }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.companyService.remove(+id);
-  // }
 
   @Patch('up_censor_allow')
   @ApiQuery({ name: 'id' ,description:'公司ID'})

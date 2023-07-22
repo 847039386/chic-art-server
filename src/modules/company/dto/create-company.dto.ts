@@ -1,10 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {  IsString ,IsInt } from 'class-validator';
+import {  IsString ,IsInt, IsArray } from 'class-validator';
 
 export class CreateCompanyDto {
     @IsString()
     @ApiProperty({ description: '公司创始人', type: String ,example:'user_id' })
     user_id :string
+    // 标签数组
+    @IsArray()
+    @ApiProperty({ description: '公司创始人', type: String ,example:'tag_id数组' })
+    tag_ids :[string]
     // 公司名称
     @IsString()
     @ApiProperty({ description: '公司名称', type: String ,example:'公司名称' })

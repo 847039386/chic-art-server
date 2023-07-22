@@ -3,7 +3,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { User } from 'src/modules/user/schema/user.schema'
-Types
+import { Tag } from 'src/modules/tag/schema/tag.schema'; 
 
 export type CompanyDocument = Company & Document;
 
@@ -18,6 +18,9 @@ export class Company extends Document {
     // 公司创始人,
     @Prop({ type: Types.ObjectId, ref: 'User' ,required:true })
     user_id: User
+    // 公司创始人,
+    @Prop({ type: [Types.ObjectId], ref: 'Tag' })
+    tag_ids: [Tag]
     // 公司名称
     @Prop({ required: true })
     name: String
