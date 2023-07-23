@@ -23,9 +23,9 @@ export class Camera extends Document {
     // 流量卡号
     @Prop({ required: true })
     iccid: string
-    // 摄像头编号
-    // @Prop({ required: true })
-    // no:number
+    //摄像头编号
+    @Prop({ required: true })
+    no:number
     // 摄像头拉流地址
     @Prop({ required: true })
     url:string 

@@ -46,7 +46,7 @@ export class CameraController {
       if(typeof dto.iccid != 'undefined' && dto.iccid != null){
         match = Object.assign(match,{ iccid :dto.iccid})
       }
-      let data =  await this.cameraService.findAll(page,limit,{ populate:'company_id' ,conditions: match });
+      let data =  await this.cameraService.findAll(page,limit,{ populate:{ path :'company_id' ,select:{ name:1 , }} ,conditions: match });
       return apiAmendFormat(data,{
         isTakeResponse :false,
     })
