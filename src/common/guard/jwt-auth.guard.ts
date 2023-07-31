@@ -3,12 +3,9 @@ import {
     Injectable,
     UnauthorizedException,
   } from '@nestjs/common';
-  import { NestFactory } from '@nestjs/core';
   import { AuthGuard } from '@nestjs/passport';
   import { AuthService } from 'src/modules/auth/auth.service';
   import { UserService } from 'src/modules/user/user.service';
-  import { NestExpressApplication } from '@nestjs/platform-express';
-  import { AppModule } from 'src/app.module';
   import { BaseException, ResultCode } from 'src/shared/utils/base_exception.util';
   import { allRouter } from 'src/shared/data/router.data';
   import { PermissionService } from 'src/modules/permission/permission.service';
@@ -63,7 +60,6 @@ import {
             if(verify){
               return true
             }else{
-              console.log('无权限')
               throw new BaseException(ResultCode.PERMISSION_NO,{})
               return false
             }

@@ -1,10 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete ,Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Request, Delete ,Query, UseGuards } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import { CreateCompanyDto, SearchCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto, UpdateCompanyWeightDto } from './dto/update-company.dto';
-import { ApiOperation ,ApiQuery ,ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation ,ApiQuery ,ApiTags } from '@nestjs/swagger';
 import { apiAmendFormat } from 'src/shared/utils/api.util';
 import { BaseException, ResultCode } from 'src/shared/utils/base_exception.util';
+import { AuthGuard } from '@nestjs/passport';
+import { listenerCount } from 'process';
 
 @Controller('api/company')
 @ApiTags('公司接口') 
@@ -12,10 +14,23 @@ export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
 
   @Post('add')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: '创建公司', description: '创建一家公司' })
-  async create(@Body() dto: CreateCompanyDto) {
+  async create(@Body() dto: CreateCompanyDto,@Request() req) {
     try {
-      if(dto.user_id && dto.name){
+      let user_id = req.user.id;
+      if(dto.name){
+        // 公司名称正则：2至12位，可以是中文、英文或数字
+        let companyNamePattern = /^([a-zA-Z0-9\u4e00-\u9fa5]{2,12})$/;
+        if(!companyNamePattern.test(dto.name)){
+          throw new BaseException(ResultCode.COMMON_PARAM_ERROR,{})
+        }
+        // 简介长度最短为2最长120
+        let companyDescriptionPattern = /^([\s\S]{2,120})$/;
+        if(!companyDescriptionPattern.test(dto.description)){
+          throw new BaseException(ResultCode.COMMON_PARAM_ERROR,{})
+        }
 
         // 公司是否重名
         if(await this.companyService.isExist(dto.name)){
@@ -23,11 +38,11 @@ export class CompanyController {
         }
 
         // 一个用户只允许注册一家公司
-        if(await this.companyService.userIsExist(dto.user_id)){
+        if(await this.companyService.userIsExist(user_id)){
           throw new BaseException(ResultCode.COMPANY_USER_IS_EXIST,{})
         }
 
-        return apiAmendFormat(await this.companyService.create(dto))
+        return apiAmendFormat(await this.companyService.create(user_id,dto))
 
       }else{
         throw new BaseException(ResultCode.COMMON_PARAM_ERROR,{})

@@ -15,6 +15,9 @@ export type CompanyDocument = Company & Document;
     }
 })
 export class Company extends Document {
+    // Logo图片地址,
+    @Prop({ type:String, ref: 'User' })
+    logo: string
     // 公司创始人,
     @Prop({ type: Types.ObjectId, ref: 'User' ,required:true })
     user_id: User

@@ -2,9 +2,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import {  IsString ,IsInt, IsArray } from 'class-validator';
 
 export class CreateCompanyDto {
-    @IsString()
-    @ApiProperty({ description: '公司创始人', type: String ,example:'user_id' })
-    user_id :string
+    // 标签数组
+    @IsArray()
+    @ApiProperty({ description: 'logo地址', type: String ,example:'logo地址' })
+    logo :[string]
     // 标签数组
     @IsArray()
     @ApiProperty({ description: '公司创始人', type: String ,example:'tag_id数组' })
@@ -16,7 +17,7 @@ export class CreateCompanyDto {
     // 公司描述
     @IsString()
     @ApiProperty({ description: '公司描述', type: String ,example:'公司描述' })
-    description: String
+    description: string
 }
 
 

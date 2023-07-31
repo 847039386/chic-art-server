@@ -13,9 +13,10 @@ export class CompanyService {
     ){}
 
 
-  async create(dto: CreateCompanyDto) {
+  async create(user_id :string ,dto: CreateCompanyDto) {
     const tag = new this.companySchema({
-      user_id: new Types.ObjectId(dto.user_id),
+      logo:dto.logo,
+      user_id: new Types.ObjectId(user_id),
       name : dto.name,
       description :dto.description,
       tag_ids :dto.tag_ids

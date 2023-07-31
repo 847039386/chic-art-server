@@ -5,7 +5,6 @@ import { AppModule } from './app.module';
 import { RequestInterceptor } from './common/interceptors/request_log.interceptor'
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { AllExceptionsFilter } from './common/filters/base-exception.filter';
-import { OperatorExceptionsFilter } from './common/filters/operator-exception.filter';
 import { ResponseStartTime } from './common/middleware/res_start_time.middleware';
 import { OperatorLogService } from './modules/operator_log/operator_log.service';
 import { RequestLogService } from './modules/request_log/request_log.service';
@@ -33,7 +32,7 @@ async function bootstrap() {
   var requestLogService = app.get<RequestLogService>(RequestLogService)
   var operatorLogService = app.get<OperatorLogService>(OperatorLogService) 
   var permissionService = app.get<PermissionService>(PermissionService) 
-  app.useGlobalFilters(new AllExceptionsFilter() ,new HttpExceptionFilter(requestLogService) ,new OperatorExceptionsFilter(requestLogService,operatorLogService));
+  app.useGlobalFilters(new AllExceptionsFilter() ,new HttpExceptionFilter(requestLogService));
   app.useGlobalInterceptors(new RequestInterceptor(requestLogService,operatorLogService));
   // 全局守卫
   app.useGlobalGuards(new JwtAuthGuard(authService ,permissionService,userService))

@@ -7,7 +7,7 @@ export type AccountDocument = Account & Document;
 
 export enum identityType {
     username = 'username',   
-    weixin = 'weixin',
+    wx = 'wx',
     qq = 'qq',
     mobile = 'mobile',
     email = 'email'

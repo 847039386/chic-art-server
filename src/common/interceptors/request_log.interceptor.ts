@@ -7,6 +7,7 @@ import { BaseException, ResultCode } from 'src/shared/utils/base_exception.util'
 import { CreateOperatorLogDto } from 'src/modules/operator_log/dto/create-operator_log.dto';
 import { RequestLogService } from 'src/modules/request_log/request_log.service';
 import { OperatorLogService } from 'src/modules/operator_log/operator_log.service';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class RequestInterceptor implements NestInterceptor {
@@ -55,6 +56,7 @@ export class RequestInterceptor implements NestInterceptor {
                                 }
                                 if(config.is_save_operator && config.api_type == "API"){
                                     operator = Object.assign(operator,{api ,ip ,platform ,request_method ,error_code :operator.error_code})
+                                    operator = Object.assign(operator,{ user_id:new Types.ObjectId(operator.user_id) })
                                     this.operatorService.create(operator)
                                 }
 

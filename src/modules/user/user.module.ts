@@ -9,7 +9,10 @@ import { UserGroupRoleModule } from '../user_group_role/user_group_role.module';
 import { RolePermissionModule } from '../role_permission/role_permission.module';
 
 @Module({
-  exports:[UserService],
+  exports:[
+    UserService,
+    MongooseModule.forFeature([{ name: 'User', schema: UserSchema }])
+  ],
   controllers: [UserController],
   providers: [UserService],
   imports:[

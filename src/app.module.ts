@@ -16,6 +16,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { CompanyModule } from './modules/company/company.module';
 import { TagModule } from './modules/tag/tag.module';
 import { CameraModule } from './modules/camera/camera.module';
+import { FileModule } from './modules/file/file.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { CameraModule } from './modules/camera/camera.module';
     CompanyModule,
     TagModule,
     CameraModule,
+    FileModule
   ],
   controllers: [AppController],
   providers: [AppService],

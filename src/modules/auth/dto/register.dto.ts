@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {  IsString ,MaxLength, MinLength} from 'class-validator';
+import {  IsString , MinLength} from 'class-validator';
 export class RegisterDto {
     // 用户昵称 
     @ApiProperty({ description: '用户昵称', type: String  ,example:'秋天的小鲨鱼'})
