@@ -118,6 +118,18 @@ export class CompanyController {
     
   }
 
+  @Get('user')
+  @ApiQuery({ name: 'id' ,description:'用户ID'})
+  @ApiOperation({ summary: '创始人用户的公司', description: '根据用户ID返回一条他的公司' })
+  async findUser(@Query('user_id') id: string) {
+    try {
+      return apiAmendFormat(await this.companyService.findByUserId(id))
+    } catch (error) {
+      throw new BaseException(ResultCode.ERROR,{},error)
+    }
+    
+  }
+
   @Patch('up_info')
   @ApiOperation({ summary: '修改公司信息', description: '根据id修改公司的信息' })
   async updateInfo(@Body() dto: UpdateCompanyDto) {

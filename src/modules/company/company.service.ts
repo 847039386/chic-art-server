@@ -55,7 +55,11 @@ export class CompanyService {
   }
 
   async findById(id :string) {
-    return this.companySchema.findById(id)
+    return await this.companySchema.findById(id).populate('user_id tag_ids')
+  }
+
+  async findByUserId(id :string) {
+    return await this.companySchema.findOne({ user_id : new Types.ObjectId(id)}).populate('user_id tag_ids')
   }
 
   async remove(id :string) {

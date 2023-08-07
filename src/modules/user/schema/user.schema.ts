@@ -13,9 +13,15 @@ export type UserDocument = User & Document;
     },
 })
 export class User extends Document {
+    // 用户真实姓名
+    @Prop({  })
+    name: String
     // 用户昵称
     @Prop({ required: true })
-    name: String
+    nickname: String
+    // 用户手机
+    @Prop({  })
+    phone: Number
     // 用户状态
     @Prop({ default:0 })
     state: Number

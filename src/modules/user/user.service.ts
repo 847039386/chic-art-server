@@ -2,7 +2,7 @@ import { Model, Types } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserDto, SearchUserDto } from './dto/create-user.dto';
-import { UpdateUserInfoDto ,UpdateUserStateDto} from './dto/update-user.dto';
+import { UpdateUserStateDto} from './dto/update-user.dto';
 import { CreateUserGroupUserDto } from '../user_group_user/dto/create-user_group_user.dto';
 import { CreateUserGroupRoleDto } from '../user_group_role/dto/create-user_group_role.dto';
 import { sonsTree, treeFormat } from 'src/shared/utils/tree.util';
@@ -70,6 +70,8 @@ export class UserService {
           $group: {
             _id : "$_id",
             name: { $first: "$name" },
+            nickname :{ $first: "$nickname" },
+            phone :{ $first: "$phone" },
             state: { $first: "$state" },
             avatar: { $first: "$avatar" },
             create_time :{$first: "$create_time"},
@@ -125,10 +127,8 @@ export class UserService {
     };
   }
  
-  async updateInfo(dto: UpdateUserInfoDto) {
-    return await this.userSchema.findByIdAndUpdate(dto.id,{
-      name :dto.name,
-    })
+  async updateInfo(id ,data: any) {
+    return await this.userSchema.findByIdAndUpdate(id ,data)
   }
 
   async updateState(dto: UpdateUserStateDto) {

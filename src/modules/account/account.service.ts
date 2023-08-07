@@ -37,7 +37,7 @@ export class AccountService {
         throw new BaseException(ResultCode.ACCOUNT_USERNAME_REPEAT,{})
       }
       // 如没有注册创建一个用户
-      const user_schema = new this.userSchema({ name :dto.name ,avatar :dto.avatar  })
+      const user_schema = new this.userSchema({ nickname :dto.nickname ,avatar :dto.avatar  })
       const user = await user_schema.save({ session });
       const user_id = user._id
       const salt = makeSalt()
@@ -92,7 +92,7 @@ export class AccountService {
       }else{
         // 不存在则注册
         const salt = makeSalt()
-        const user_schema = new this.userSchema({ name :dto.name ,avatar :dto.avatar  })
+        const user_schema = new this.userSchema({ nickname :dto.nickname ,avatar :dto.avatar  })
         const user = await user_schema.save({ session });
         const user_id = user._id
         const account_schema = new this.accountSchema({

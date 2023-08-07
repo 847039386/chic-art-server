@@ -19,7 +19,7 @@ export class RegisterDto {
     @ApiProperty({ description: '用户昵称', type: String  ,example:'秋天的小鲨鱼'})
     @IsString()
     @MinLength(10)
-    name :string
+    nickname :string
     // 头像地址 
     @ApiProperty({ description: '头像地址', type: String  ,example:'http://192.168.3.9:3000/images/avatar/1.jpg'})
     @IsString()
@@ -44,7 +44,7 @@ export class WxloginDto {
     @ApiProperty({ description: '用户微信昵称', type: String  ,example:'秋天的小鲨鱼'})
     @IsString()
     @MinLength(10)
-    name :string
+    nickname :string
     // 头像地址 
     @ApiProperty({ description: '用户微信头像地址', type: String  ,example:'http://192.168.3.9:3000/images/avatar/1.jpg'})
     @IsString()

@@ -4,8 +4,9 @@ export class ResultCode {
     // 公共错误
     static COMMON_PARAM_ERROR = { code :20001 ,message:"参数错误"} 
     // 用户模块错误
-    static USER_NAME_LIMIT = { code :20101 ,message:"用户名称超出限制"} 
-    static USER_NOT_EXISTS = { code :20102 ,message:"用户不存在"} 
+    static USER_NOT_EXISTS = { code :20101 ,message:"用户不存在"} 
+    static USER_NAME_VERIFY = { code :20102 ,message:"姓名应是中文姓名2-5位或英文名称2-16位"} 
+    static USER_PHONE_VERIFY = { code :20103 ,message:"请输入正确的手机号或固定电话"} 
     // 账号模块错误
     static ACCOUNT_CREDENTIAL_LIMIT = { code :20201 ,message:"凭证超出限制"} 
     static ACCOUNT_CREDENTIAL_ERROR = { code :20202 ,message:"凭证错误"} 

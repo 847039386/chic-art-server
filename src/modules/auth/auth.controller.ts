@@ -67,6 +67,7 @@ export class AuthController {
           const refreshToken = this.authService.certificateRefresh({_id:user_id._id ,name :user_id.name.toString()},accessToken)
           const payload = this.authService.verifyToken(accessToken)
           return apiAmendFormat({ 
+            user_id:user_id._id,
             username: user_id.name, 
             avatar:user_id.avatar ,
             accessToken,
@@ -150,6 +151,7 @@ export class AuthController {
       const refreshToken = this.authService.certificateRefresh({_id:result._id ,name :result.name.toString()},accessToken)
       const payload = this.authService.verifyToken(accessToken)
       return apiAmendFormat({
+        user_id:result._id,
         username: result.name, 
         avatar:result.avatar ,
         accessToken,
