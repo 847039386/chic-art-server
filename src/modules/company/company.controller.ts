@@ -81,7 +81,7 @@ export class CompanyController {
   }
 
   @Post('censor_list')
-  @ApiOperation({ summary: '公司列表', description: '公司列表' })
+  @ApiOperation({ summary: '公司审核列表', description: '公司审核列表' })
   async findCensorAll(@Body() dto :SearchCompanyDto) {
     try {
       let page = 1;

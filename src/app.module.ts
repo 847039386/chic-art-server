@@ -17,6 +17,11 @@ import { CompanyModule } from './modules/company/company.module';
 import { TagModule } from './modules/tag/tag.module';
 import { CameraModule } from './modules/camera/camera.module';
 import { FileModule } from './modules/file/file.module';
+import { CompanyEmployeeModule } from './modules/company_employee/company_employee.module';
+import { ProgressTemplateModule } from './modules/progress_template/progress_template.module';
+import { ProjectOrderModule } from './modules/project_order/project_order.module';
+import { ProjectOrderUserModule } from './modules/project_order_user/project_order_user.module';
+import { MessageModule } from './modules/message/message.module';
 
 @Module({
   imports: [
@@ -35,7 +40,12 @@ import { FileModule } from './modules/file/file.module';
     CompanyModule,
     TagModule,
     CameraModule,
-    FileModule
+    FileModule,
+    CompanyEmployeeModule,
+    ProgressTemplateModule,
+    ProjectOrderModule,
+    ProjectOrderUserModule,
+    MessageModule
   ],
   controllers: [AppController],
   providers: [AppService],

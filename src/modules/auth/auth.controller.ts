@@ -34,11 +34,11 @@ export class AuthController {
       // 解析RefreshToken
       const payload = this.authService.verifyToken(refresh_token)
       // 签发一个新token，
-      const accessToken = this.authService.certificate({_id:payload.sub ,name :payload.username})
+      const accessToken = this.authService.certificate({_id:payload.sub ,name :payload.name,nickname:payload.nickename})
       // 获取新token里的值
       const newPayload = this.authService.verifyToken(accessToken)
       // 签发一个刷新token，
-      const refreshToken = this.authService.certificateRefresh({_id:payload.sub ,name :payload.username},accessToken)
+      const refreshToken = this.authService.certificateRefresh({_id:payload.sub ,name :payload.name,nickname:payload.nickename},accessToken)
       
       return apiAmendFormat({ 
         accessToken,
@@ -63,12 +63,13 @@ export class AuthController {
         const salt = account.salt;
         const hashPassword = encryptCredential(credential, salt);
         if (hashedPassword === hashPassword) {
-          const accessToken = this.authService.certificate({_id:user_id._id ,name:user_id.name.toString()})
-          const refreshToken = this.authService.certificateRefresh({_id:user_id._id ,name :user_id.name.toString()},accessToken)
+          const accessToken = this.authService.certificate({_id:user_id._id ,name:user_id.name ,nickname:user_id.nickname})
+          const refreshToken = this.authService.certificateRefresh({_id:user_id._id ,name :user_id.name,nickname:user_id.nickname },accessToken)
           const payload = this.authService.verifyToken(accessToken)
           return apiAmendFormat({ 
             user_id:user_id._id,
-            username: user_id.name, 
+            nickname: user_id.nickname, 
+            name: user_id.name, 
             avatar:user_id.avatar ,
             accessToken,
             refreshToken,
@@ -146,13 +147,16 @@ export class AuthController {
   @ApiOperation({ summary: '登陆微信账号'}) 
   async wxLogin(@Body() body :WxloginDto) {
     try {
+      console.log(body)
       let result:any = await this.accountService.wxLogin(body);
-      const accessToken = this.authService.certificate({_id:result._id ,name:result.name.toString()})
-      const refreshToken = this.authService.certificateRefresh({_id:result._id ,name :result.name.toString()},accessToken)
+      const accessToken = this.authService.certificate({_id:result._id ,nickname:result.nickname ,name:result.name})
+      const refreshToken = this.authService.certificateRefresh({_id:result._id ,nickname :result.nickname,name:result.name },accessToken)
       const payload = this.authService.verifyToken(accessToken)
+      console.log(payload)
       return apiAmendFormat({
         user_id:result._id,
-        username: result.name, 
+        nickname: result.nickname, 
+        name: result.name, 
         avatar:result.avatar ,
         accessToken,
         refreshToken,

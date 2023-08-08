@@ -26,10 +26,10 @@ export class Company extends Document {
     tag_ids: [Tag]
     // 公司名称
     @Prop({ required: true })
-    name: String
+    name: string
     // 公司描述
     @Prop({ required: true })
-    description: String
+    description: string
     // 权重
     @Prop({ required: true ,default :0 })
     weight: number

@@ -1,4 +1,3 @@
-
 // 角色表
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
@@ -15,7 +14,7 @@ export type TagDocument = Tag & Document;
 export class Tag extends Document {
     // 标签名称
     @Prop({ required: true })
-    name: String
+    name: string
 }
 
 export const TagSchema = SchemaFactory.createForClass(Tag);

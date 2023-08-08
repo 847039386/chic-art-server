@@ -49,7 +49,7 @@ export class CameraController {
       let data =  await this.cameraService.findAll(page,limit,{ populate:{ path :'company_id' ,select:{ name:1 , }} ,conditions: match });
       return apiAmendFormat(data,{
         isTakeResponse :false,
-    })
+      })
     } catch (error) {
       throw new BaseException(ResultCode.ERROR,{},error)
     }

@@ -15,19 +15,19 @@ export type UserDocument = User & Document;
 export class User extends Document {
     // 用户真实姓名
     @Prop({  })
-    name: String
+    name: string
     // 用户昵称
     @Prop({ required: true })
-    nickname: String
+    nickname: string
     // 用户手机
     @Prop({  })
-    phone: Number
+    phone: number
     // 用户状态
     @Prop({ default:0 })
-    state: Number
+    state: number
     // 用户头像地址
     @Prop({  })
-    avatar:String
+    avatar:string
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
