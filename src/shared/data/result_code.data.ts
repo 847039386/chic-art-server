@@ -43,6 +43,8 @@ export class ResultCode {
     // 公司
     static COMPANY_IS_EXIST = { code :21001 ,message:"公司名称已被注册"} 
     static COMPANY_USER_IS_EXIST = { code :21002 ,message:"每个用户只允许注册一家公司"} 
+    // 公司员工
+    static COMPANY_EMPLOYEE_GROUPNAME_LIMIT = { code :21101 ,message:"分组名称超出闲置，应至少为1-16位"} 
 }
 
 

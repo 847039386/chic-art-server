@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
+import { Company } from 'src/modules/company/schema/company.schema';
 
 export type ProjectOrderDocument = ProjectOrder & Document;
 
@@ -11,9 +12,9 @@ export type ProjectOrderDocument = ProjectOrder & Document;
     }
 })
 export class ProjectOrder extends Document {
-    // 进度模板名称
-    @Prop({ required: true })
-    company_id: string
+    // 公司ID
+    @Prop({ type: Types.ObjectId, ref: 'Company' ,required:true })
+    company_id: Company
     /**
      * 后台有一个progress_template表，但是这里不与该表ID所连接，而是将他的数据复制到这里
      */

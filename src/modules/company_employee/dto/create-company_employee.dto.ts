@@ -3,10 +3,11 @@ import {  IsString  } from 'class-validator';
 export class CreateCompanyEmployeeDto {
     // 标签名称
     @IsString()
-    @ApiProperty({ description: '进度模板名称',example:'工程模板' })
+    @ApiProperty({ description: '用户ID',example:'用户ID' })
     user_id: string
     // 标签名称
     @IsString()
-    @ApiProperty({ description: '进度模板是数组' ,example:['开始','中间','结束'] })
-    company_id: [string]
+    @ApiProperty({ description: '公司ID' ,example:'公司ID' })
+    company_id: string
+
 }

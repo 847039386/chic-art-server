@@ -28,6 +28,9 @@ export class CompanyEmployee extends Document {
      */
     @Prop({ required: true ,default :0 })
     identity_type: number
+    // 分组名称
+    @Prop({ required: true ,default :'默认分组' })
+    group_name :string
 }
 
 export const CompanyEmployeeSchema = SchemaFactory.createForClass(CompanyEmployee);

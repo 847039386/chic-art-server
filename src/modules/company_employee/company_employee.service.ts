@@ -12,12 +12,23 @@ export class CompanyEmployeeService {
   ){}
 
   async create(dto: CreateCompanyEmployeeDto) {
-    const companyEmployee = new this.companyEmployeeSchema(dto)
+    const companyEmployee = new this.companyEmployeeSchema({
+      user_id :new Types.ObjectId(dto.user_id),
+      company_id :new Types.ObjectId(dto.company_id)
+    })
     return await companyEmployee.save()
   }
 
   async findEmployeesByCompanyId(company_id) {
     return await this.companyEmployeeSchema.find({company_id:new Types.ObjectId(company_id)}).populate('user_id')
+  }
+
+  async updateById(id ,newData) {
+    return await this.companyEmployeeSchema.findByIdAndUpdate(id,newData)
+  }
+
+  async updateMany(filter ,data) {
+    return await this.companyEmployeeSchema.updateMany(filter,data)
   }
 
   async remove(id: string) {
