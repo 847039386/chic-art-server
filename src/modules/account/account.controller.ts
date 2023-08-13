@@ -2,7 +2,7 @@ import { Controller, Body, Patch, UseGuards, Request } from '@nestjs/common';
 import { AccountService } from './account.service';
 import { apiAmendFormat } from 'src/shared/utils/api.util';
 import { ApiTags ,ApiOperation, ApiBearerAuth, ApiBody } from '@nestjs/swagger';
-import { OperatorException ,ResultCode ,BaseException } from 'src/shared/utils/base_exception.util';
+import { ResultCode ,BaseException } from 'src/shared/utils/base_exception.util';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { encryptCredential } from 'src/shared/utils/cryptogram.util';
 import { AuthService } from '../auth/auth.service';
@@ -75,7 +75,7 @@ export class AccountController {
         throw new BaseException(ResultCode.ACCOUNT_USERNAME_NOT,{})
       }
     } catch (error) {
-      throw new OperatorException(ResultCode.ERROR,{ user_id ,operatorType:'修改' ,module:'账户' ,subject:'密码' ,description:`修改密码失败`},{ isSaveOperator:true },error)
+      throw new BaseException(ResultCode.ERROR,{},error)
     } 
   }
 

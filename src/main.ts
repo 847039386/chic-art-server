@@ -11,7 +11,6 @@ import { RequestLogService } from './modules/request_log/request_log.service';
 import { join } from 'path';
 import { JwtAuthGuard } from './common/guard/jwt-auth.guard';
 import { AuthService } from './modules/auth/auth.service';
-import { PermissionAuth } from './common/guard/permission-auth.guard';
 import { PermissionService } from './modules/permission/permission.service';
 import { UserService } from './modules/user/user.service';
 

@@ -11,17 +11,3 @@ export class UpdateUserStateDto {
     @ApiProperty({ description: '权限状态', type: String ,example:true })
     state: boolean    
 }
-
-
-export class UpdateUserNameDto {
-    @IsString()
-    @ApiProperty({ description: '用户名称', type: String ,example:'_id' })
-    name: string
-}
-
-export class UpdateUserPhoneDto {
-    @IsString()
-    @ApiProperty({ description: '用户名称', type: String ,example:'_id' })
-    phone: string
-}
-

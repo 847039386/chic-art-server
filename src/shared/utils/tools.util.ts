@@ -82,3 +82,8 @@ export function deepClone(target) {
 
   return clone(target)
 }
+
+// 去重数组
+export function uniqueArray (arr) : Array<string>{
+    return Array.from(new Set(arr))
+}

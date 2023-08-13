@@ -4,7 +4,7 @@ import { LoginDto } from './dto/login.dto';
 import { ApiBody, ApiTags ,ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { AccountService } from '../account/account.service';
 import { encryptCredential, makeSalt } from 'src/shared/utils/cryptogram.util';
-import { OperatorException ,BaseException ,ResultCode } from 'src/shared/utils/base_exception.util';
+import { BaseException ,ResultCode } from 'src/shared/utils/base_exception.util';
 import { apiAmendFormat } from 'src/shared/utils/api.util';
 import { UserService } from '../user/user.service'
 import { RefreshTokenDto } from './dto/refresh-token.dto';
@@ -70,7 +70,8 @@ export class AuthController {
             user_id:user_id._id,
             nickname: user_id.nickname, 
             name: user_id.name, 
-            avatar:user_id.avatar ,
+            avatar:user_id.avatar,
+            phone:user_id.phone,
             accessToken,
             refreshToken,
             expires :payload.exp
@@ -86,12 +87,7 @@ export class AuthController {
           })
         } else {
           // 密码错误
-          throw new OperatorException(ResultCode.ACCOUNT_PASSWORD_ERROR,{
-            operatorType:'登陆',
-            module :'账户',
-            subject : '本站',
-            description :'密码错误',
-          },{isSaveOperator:true})
+          throw new BaseException(ResultCode.ACCOUNT_PASSWORD_ERROR,{})
           
         }
       }else{
@@ -158,6 +154,7 @@ export class AuthController {
         nickname: result.nickname, 
         name: result.name, 
         avatar:result.avatar ,
+        phone:result.phone,
         accessToken,
         refreshToken,
         expires :payload.exp

@@ -4,6 +4,7 @@ import { ProjectOrderController } from './project_order.controller';
 
 import { MongooseModule } from '@nestjs/mongoose';
 import { ProjectOrderSchema } from './schema/project_order.schema';
+import { ProjectOrderEmployeeModule } from '../project_order_employee/project_order_employee.module';
 
 @Module({
   exports: [
@@ -13,6 +14,7 @@ import { ProjectOrderSchema } from './schema/project_order.schema';
   providers: [ProjectOrderService],
   imports: [
     MongooseModule.forFeature([{ name: 'ProjectOrder', schema: ProjectOrderSchema }]),
+    ProjectOrderEmployeeModule
   ]
 })
 export class ProjectOrderModule {}

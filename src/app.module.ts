@@ -20,8 +20,8 @@ import { FileModule } from './modules/file/file.module';
 import { CompanyEmployeeModule } from './modules/company_employee/company_employee.module';
 import { ProgressTemplateModule } from './modules/progress_template/progress_template.module';
 import { ProjectOrderModule } from './modules/project_order/project_order.module';
-import { ProjectOrderUserModule } from './modules/project_order_user/project_order_user.module';
 import { MessageModule } from './modules/message/message.module';
+import { ProjectOrderEmployeeModule } from './modules/project_order_employee/project_order_employee.module';
 
 @Module({
   imports: [
@@ -44,8 +44,8 @@ import { MessageModule } from './modules/message/message.module';
     CompanyEmployeeModule,
     ProgressTemplateModule,
     ProjectOrderModule,
-    ProjectOrderUserModule,
-    MessageModule
+    MessageModule,
+    ProjectOrderEmployeeModule
   ],
   controllers: [AppController],
   providers: [AppService],

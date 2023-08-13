@@ -23,14 +23,18 @@ export class CompanyEmployee extends Document {
     company_id: Company
     /**
      * 身份
-     * 0:普通员工
-     * 1:管理，公司管理由创始人更改，管理人可以创建订单分配订单工人
+     * 0：审核中
+     * 1：普通员工
+     * 2：管理，公司管理由创始人更改，管理人可以创建订单分配订单工人
      */
     @Prop({ required: true ,default :0 })
     identity_type: number
     // 分组名称
     @Prop({ required: true ,default :'默认分组' })
     group_name :string
+    // 员工备注
+    @Prop({ required: true ,default :'普通员工' })
+    remark :string
 }
 
 export const CompanyEmployeeSchema = SchemaFactory.createForClass(CompanyEmployee);

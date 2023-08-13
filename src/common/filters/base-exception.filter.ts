@@ -1,6 +1,5 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, ServiceUnavailableException } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { RequestLogService } from '../../modules/request_log/request_log.service'; 
 import { BaseException } from 'src/shared/utils/base_exception.util'
 
 @Catch(BaseException)

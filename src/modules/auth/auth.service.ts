@@ -1,9 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { encryptCredential } from 'src/shared/utils/cryptogram.util';
 import { AccountService } from '../account/account.service';
-import { ResultCode ,OperatorException ,BaseException } from 'src/shared/utils/base_exception.util';
-import { User } from '../user/schema/user.schema';
+import { ResultCode ,BaseException } from 'src/shared/utils/base_exception.util';
 import baseConfig from 'src/config/base.config';
 
 
@@ -43,18 +41,7 @@ export class AuthService {
       if(!token){
         throw new BaseException(ResultCode.AUTH_TOKEN_NOT,{})
       }
-      return  this.jwtService.verify(token.replace('Bearer ', ''));
-    } catch (error) {
-      throw new BaseException(ResultCode.AUTH_TOKEN_ERROR,{})
-    }
-  }
-
-  verifyToken1(token: string) {
-    try {
-      if(!token){
-        throw new BaseException(ResultCode.AUTH_TOKEN_NOT,{})
-      }
-      return  this.jwtService.verify(token.replace('Bearer ', ''));
+      return this.jwtService.verify(token.replace('Bearer ', ''));
     } catch (error) {
       throw new BaseException(ResultCode.AUTH_TOKEN_ERROR,{})
     }

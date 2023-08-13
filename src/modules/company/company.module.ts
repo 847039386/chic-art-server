@@ -6,7 +6,8 @@ import { CompanySchema } from './schema/company.schema';
 
 @Module({
   exports:[
-    MongooseModule.forFeature([{ name: 'Company', schema: CompanySchema }])
+    MongooseModule.forFeature([{ name: 'Company', schema: CompanySchema }]),
+    CompanyService
   ],
   controllers: [CompanyController],
   providers: [CompanyService],

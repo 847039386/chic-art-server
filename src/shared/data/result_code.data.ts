@@ -5,7 +5,7 @@ export class ResultCode {
     static COMMON_PARAM_ERROR = { code :20001 ,message:"参数错误"} 
     // 用户模块错误
     static USER_NOT_EXISTS = { code :20101 ,message:"用户不存在"} 
-    static USER_NAME_VERIFY = { code :20102 ,message:"姓名应是中文姓名2-5位或英文名称2-16位"} 
+    static USER_NAME_VERIFY = { code :20102 ,message:"姓名应是中文姓名2-5位"} 
     static USER_PHONE_VERIFY = { code :20103 ,message:"请输入正确的手机号或固定电话"} 
     // 账号模块错误
     static ACCOUNT_CREDENTIAL_LIMIT = { code :20201 ,message:"凭证超出限制"} 
@@ -42,9 +42,15 @@ export class ResultCode {
     static TAG_IS_EXIST = { code :20901 ,message:"标签名称重复"} 
     // 公司
     static COMPANY_IS_EXIST = { code :21001 ,message:"公司名称已被注册"} 
-    static COMPANY_USER_IS_EXIST = { code :21002 ,message:"每个用户只允许注册一家公司"} 
+    static COMPANY_NOT_EXIST = { code :21002 ,message:"公司不存在"} 
+    static COMPANY_USER_IS_EXIST = { code :21003 ,message:"每个用户只允许注册一家公司"} 
     // 公司员工
-    static COMPANY_EMPLOYEE_GROUPNAME_LIMIT = { code :21101 ,message:"分组名称超出闲置，应至少为1-16位"} 
+    static COMPANY_EMPLOYEE_GROUPNAME_ERROR = { code :21101 ,message:"分组名称超出限制，应至少为1-16位"} 
+    static COMPANY_EMPLOYEE_USER_ISBOSS = { code :21102 ,message:"创始人已经是公司员工"} 
+    static COMPANY_EMPLOYEE_IS_EXIST = { code :21103 ,message:"员工已加入该公司"} 
+    static COMPANY_EMPLOYEE_IS_EXIST_AUDIT = { code :21104 ,message:"您已加入该公司，请等待审核"} 
+    static COMPANY_EMPLOYEE_NOT_PERMISSION = { code :21105 ,message:"您没有权限操作该功能"} 
+    static COMPANY_EMPLOYEE_REMARK_ERROR = { code :21106 ,message:"员工备注只允许数字英文或汉文还有空格1-16位"} 
 }
 
 

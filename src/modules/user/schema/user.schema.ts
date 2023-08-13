@@ -21,7 +21,7 @@ export class User extends Document {
     nickname: string
     // 用户手机
     @Prop({  })
-    phone: number
+    phone: string
     // 用户状态
     @Prop({ default:0 })
     state: number
