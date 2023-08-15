@@ -54,7 +54,7 @@ export class ProjectOrderListAllDto {
     
 }
 
-export class ProjectOrderListByCompanyDto {
+export class ProjectOrderListByCompanyIdDto {
     @ApiProperty({ description: '页数', type: Number ,example :1 })
     @IsInt()
     page ?:number

@@ -28,7 +28,7 @@ export class ProjectOrder extends Document {
     @Prop({ required: true })
     progress_template: string []
     // 进度步数
-    @Prop({ required: true ,default:0 })
+    @Prop({ required: true ,default:-1 })
     step: number
     // 客户名称
     @Prop({ required: true })

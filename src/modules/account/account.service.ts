@@ -115,4 +115,23 @@ export class AccountService {
     return result;
   }
 
+  async wxExist(code :string){
+    try {
+      const appid = baseConfig.wx.appid;
+      const secret = baseConfig.wx.secret;
+      const wxapi = baseConfig.wx.api;
+      const url = `${wxapi}?appid=${appid}&secret=${secret}&js_code=${code}&grant_type=authorization_code`
+      let wx_response :any = await fetch(url)
+      let wx_json = await wx_response.json()
+      if(wx_json.errmsg){
+        throw new BaseException(ResultCode.ERROR,{},{message :wx_json.errmsg})
+      }
+      let openid = wx_json.openid
+      return this.accountSchema.findOne({ identifier : openid , identity_type:'wx'})
+
+    } catch (error) {
+      throw new BaseException(ResultCode.ERROR,{},error)
+    }
+  }
+
 }

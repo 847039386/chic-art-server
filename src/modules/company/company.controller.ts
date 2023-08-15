@@ -127,7 +127,6 @@ export class CompanyController {
     } catch (error) {
       throw new BaseException(ResultCode.ERROR,{},error)
     }
-    
   }
 
   @Patch('up_info')

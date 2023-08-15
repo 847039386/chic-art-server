@@ -1,7 +1,7 @@
-import { Controller, Body, Patch, UseGuards, Request } from '@nestjs/common';
+import { Controller, Body, Patch, UseGuards, Request ,Query, Get } from '@nestjs/common';
 import { AccountService } from './account.service';
 import { apiAmendFormat } from 'src/shared/utils/api.util';
-import { ApiTags ,ApiOperation, ApiBearerAuth, ApiBody } from '@nestjs/swagger';
+import { ApiTags ,ApiOperation, ApiBearerAuth, ApiBody ,ApiQuery } from '@nestjs/swagger';
 import { ResultCode ,BaseException } from 'src/shared/utils/base_exception.util';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { encryptCredential } from 'src/shared/utils/cryptogram.util';
@@ -77,6 +77,17 @@ export class AccountController {
     } catch (error) {
       throw new BaseException(ResultCode.ERROR,{},error)
     } 
+  }
+
+  @Get('wx_exist')
+  @ApiQuery({ name: 'code' ,description:'微信登陆的code唯一值'})
+  @ApiOperation({ summary: '通过微信code查看是否注册', description: '通过微信code查看是否注册' })
+  async wxExist(@Query('code') code: string) {
+    try {
+      return apiAmendFormat(await this.accountService.wxExist(code))
+    } catch (error) {
+      throw new BaseException(ResultCode.ERROR,{},error)
+    }
   }
 
 }

@@ -51,6 +51,11 @@ export class ResultCode {
     static COMPANY_EMPLOYEE_IS_EXIST_AUDIT = { code :21104 ,message:"您已加入该公司，请等待审核"} 
     static COMPANY_EMPLOYEE_NOT_PERMISSION = { code :21105 ,message:"您没有权限操作该功能"} 
     static COMPANY_EMPLOYEE_REMARK_ERROR = { code :21106 ,message:"员工备注只允许数字英文或汉文还有空格1-16位"} 
+    // 项目订单客户关系表
+    static PROJECT_ORDER_CUSTOMER_IS_EXIST = { code :21201 ,message:"您已加入该订单，不需要重复申请"} 
+    static PROJECT_ORDER_CUSTOMER_IS_EXIST_AUDIT = { code :21201 ,message:"您已加入该订单，请等待审核，您可以联系项目负责人"} 
+    // 项目订单与监控关系表
+    static PROJECT_ORDER_CAMERA_IS_EXIST = { code :21301 ,message:"请不要重复添加监控"} 
 }
 
 

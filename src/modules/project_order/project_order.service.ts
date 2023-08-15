@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { CreateProjectOrderDto } from './dto/create-project_order.dto';
-import { UpdateProjectOrderDto } from './dto/update-project_order.dto';
+import { UpdateProjectOrderStepDto } from './dto/update-project_order.dto';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model, Types } from 'mongoose';
 import { CURD } from 'src/shared/utils/curd.util';
 import { BaseException, ResultCode } from 'src/shared/utils/base_exception.util';
-import { uniqueArray } from 'src/shared/utils/tools.util';
 
 @Injectable()
 export class ProjectOrderService {
@@ -24,7 +23,7 @@ export class ProjectOrderService {
       const projectOrder = new this.projectOrderSchema({
         name:dto.name,
         user_id: new Types.ObjectId(user_id),
-        company_id:dto.company_id,
+        company_id: new Types.ObjectId(dto.company_id),
         customer :dto.customer,
         address : dto.address,
         phone:dto.phone,
@@ -71,15 +70,8 @@ export class ProjectOrderService {
     return await this.projectOrderSchema.findById(id).populate('user_id company_id');
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} projectOrder`;
+  async updateById(id :string ,dto :any) {
+    return await this.projectOrderSchema.findByIdAndUpdate(id,dto);
   }
 
-  update(id: number, updateProjectOrderDto: UpdateProjectOrderDto) {
-    return `This action updates a #${id} projectOrder`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} projectOrder`;
-  }
 }

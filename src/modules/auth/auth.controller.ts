@@ -68,10 +68,10 @@ export class AuthController {
           const payload = this.authService.verifyToken(accessToken)
           return apiAmendFormat({ 
             user_id:user_id._id,
-            nickname: user_id.nickname, 
-            name: user_id.name, 
-            avatar:user_id.avatar,
-            phone:user_id.phone,
+            nickname: user_id.nickname || null, 
+            name: user_id.name || null, 
+            avatar:user_id.avatar  || null,
+            phone:user_id.phone || null,
             accessToken,
             refreshToken,
             expires :payload.exp
@@ -143,7 +143,6 @@ export class AuthController {
   @ApiOperation({ summary: '登陆微信账号'}) 
   async wxLogin(@Body() body :WxloginDto) {
     try {
-      console.log(body)
       let result:any = await this.accountService.wxLogin(body);
       const accessToken = this.authService.certificate({_id:result._id ,nickname:result.nickname ,name:result.name})
       const refreshToken = this.authService.certificateRefresh({_id:result._id ,nickname :result.nickname,name:result.name },accessToken)
@@ -151,10 +150,10 @@ export class AuthController {
       console.log(payload)
       return apiAmendFormat({
         user_id:result._id,
-        nickname: result.nickname, 
-        name: result.name, 
-        avatar:result.avatar ,
-        phone:result.phone,
+        nickname: result.nickname || null, 
+        name: result.name || null, 
+        avatar:result.avatar  || null,
+        phone:result.phone || null,
         accessToken,
         refreshToken,
         expires :payload.exp

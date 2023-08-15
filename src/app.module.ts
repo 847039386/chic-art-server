@@ -22,6 +22,8 @@ import { ProgressTemplateModule } from './modules/progress_template/progress_tem
 import { ProjectOrderModule } from './modules/project_order/project_order.module';
 import { MessageModule } from './modules/message/message.module';
 import { ProjectOrderEmployeeModule } from './modules/project_order_employee/project_order_employee.module';
+import { ProjectOrderCustomerModule } from './modules/project_order_customer/project_order_customer.module';
+import { ProjectOrderCameraModule } from './modules/project_order_camera/project_order_camera.module';
 
 @Module({
   imports: [
@@ -45,7 +47,9 @@ import { ProjectOrderEmployeeModule } from './modules/project_order_employee/pro
     ProgressTemplateModule,
     ProjectOrderModule,
     MessageModule,
-    ProjectOrderEmployeeModule
+    ProjectOrderEmployeeModule,
+    ProjectOrderCustomerModule,
+    ProjectOrderCameraModule
   ],
   controllers: [AppController],
   providers: [AppService],

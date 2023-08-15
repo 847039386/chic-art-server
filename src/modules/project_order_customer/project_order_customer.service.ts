@@ -1,22 +1,45 @@
 import { Injectable } from '@nestjs/common';
-import { CreateProjectOrderEmployeeDto } from './dto/create-project_order_employee.dto';
-import { UpdateProjectOrderEmployeeDto } from './dto/update-project_order_employee.dto';
+import { CreateProjectOrderCustomerDto } from './dto/create-project_order_customer.dto';
+import { UpdateProjectOrderCustomerDto } from './dto/update-project_order_customer.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { CURD } from 'src/shared/utils/curd.util';
 
 @Injectable()
-export class ProjectOrderEmployeeService {
+export class ProjectOrderCustomerService {
 
   constructor(
-    @InjectModel('ProjectOrderEmployee') private readonly projectOrderEmployeeSchema: Model<any>,
+    @InjectModel('ProjectOrderCustomer') private readonly projectOrderCustomerSchema: Model<any>,
   ){}
-
-  async findByProjectOrderId(project_order_id :string) {
-    return await this.projectOrderEmployeeSchema.find({ project_order_id :new Types.ObjectId(project_order_id)}).populate('company_employee_id user_id')
-  }
   
-  async findAll(user_id :string ,page :number ,limit :number ,state? :number) {
+  async create(user_id :any ,project_order_id :any) {
+    const projectOrder = new this.projectOrderCustomerSchema({user_id ,project_order_id})
+    return await projectOrder.save()
+  }
+
+  async findOne(dto :any){
+    return await this.projectOrderCustomerSchema.findOne(dto)
+  }
+
+  async getCustomersByProjectOrderId(project_order_id :string ){
+    let id = new Types.ObjectId(project_order_id);
+    return await this.projectOrderCustomerSchema.find({ project_order_id :id }).populate('user_id')
+  }
+
+  async getPagination(page :number,limit:number ,options ?:object){
+    const curd = new CURD(this.projectOrderCustomerSchema)
+    return curd.pagination(page ,limit ,options || {});
+  }
+
+  async findByIdAndUpdate(id :string,data :object){
+    return this.projectOrderCustomerSchema.findByIdAndUpdate(id ,data);
+  }
+
+  async remove(id: string) {
+    return await this.projectOrderCustomerSchema.findByIdAndRemove(id)
+  }
+
+  async findProjectOrdersByUserId(user_id :string ,page :number ,limit :number ,state? :number) {
 
     page = Number(page);
     limit = Number(limit);
@@ -47,28 +70,6 @@ export class ProjectOrderEmployeeService {
 
     aggregates = aggregates.concat([
       {
-        $lookup: {
-          from: "user",
-          localField: "project_order_id.user_id",
-          foreignField: "_id",
-          as: "project_order_id.user_id"
-        }
-      },
-      {
-        $unwind: "$project_order_id.user_id"
-      },
-      {
-        $lookup: {
-          from: "company",
-          localField: "project_order_id.company_id",
-          foreignField: "_id",
-          as: "project_order_id.company_id"
-        }
-      },
-      {
-        $unwind: "$project_order_id.company_id"
-      },
-      {
         $facet :{
           total: [{ $count:"count" }],
           rows:[
@@ -87,8 +88,7 @@ export class ProjectOrderEmployeeService {
       },
     ])
 
-
-    let result :any = await this.projectOrderEmployeeSchema.aggregate(aggregates)
+    let result :any = await this.projectOrderCustomerSchema.aggregate(aggregates)
     let rows = result[0].data
     let total = result[0].total || 0;
     return {

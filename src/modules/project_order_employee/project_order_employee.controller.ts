@@ -13,12 +13,8 @@ import { AuthGuard } from '@nestjs/passport';
 export class ProjectOrderEmployeeController {
   constructor(private readonly projectOrderEmployeeService: ProjectOrderEmployeeService) {}
 
-  // @Post()
-  // create(@Body() createProjectOrderEmployeeDto: CreateProjectOrderEmployeeDto) {
-  //   return this.projectOrderEmployeeService.create(createProjectOrderEmployeeDto);
-  // }
 
-  @Get('project_orders')
+  @Get('project_order_list')
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @ApiQuery({ name: 'page' ,description:'当前页数' ,required :false})
@@ -38,12 +34,26 @@ export class ProjectOrderEmployeeController {
       }else{
         return apiAmendFormat(await this.projectOrderEmployeeService.findAll(req_user_id ,page ,limit ,state))
       }
-      
-      
     } catch (error) {
       throw new BaseException(ResultCode.ERROR,{},error)
     }
   }
 
+  @Get('employee_list')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @ApiQuery({ name: 'project_order_id' ,description:'项目订单'})
+  @ApiOperation({ summary: '根据项目订单查看所有与订单绑定的员工', description: '根据项目订单查看所有与订单绑定的员工' }) 
+  async findByProjectOrderId(@Query('project_order_id') project_order_id :string) {
+    try {
+      if(project_order_id){
+        return apiAmendFormat(await this.projectOrderEmployeeService.findByProjectOrderId(project_order_id))
+      }else{
+        throw new BaseException(ResultCode.ERROR,{})
+      }
+    } catch (error) {
+      throw new BaseException(ResultCode.ERROR,{},error)
+    }
+  }
 
 }
