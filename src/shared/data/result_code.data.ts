@@ -56,6 +56,8 @@ export class ResultCode {
     static PROJECT_ORDER_CUSTOMER_IS_EXIST_AUDIT = { code :21201 ,message:"您已加入该订单，请等待审核，您可以联系项目负责人"} 
     // 项目订单与监控关系表
     static PROJECT_ORDER_CAMERA_IS_EXIST = { code :21301 ,message:"请不要重复添加监控"} 
+    // 公司摄像头关系表
+    static COMPANY_CAMERA_IS_EXIST = { code :21401 ,message:"不可以重复分配摄像头"} 
 }
 
 

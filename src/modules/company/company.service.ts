@@ -72,16 +72,16 @@ export class CompanyService {
   }
 
   // 审核通过则更改值
-  async censorAllow(id :string){
+  async auditAllow(id :string){
     return await this.companySchema.findByIdAndUpdate(id,{
-      censor:0
+      audit_state:0
     })
   }
 
   // 审核拒绝后将状态改为不通过
-  async censorNotAllow(id){
+  async auditNotAllow(id){
     return await this.companySchema.findByIdAndUpdate(id,{
-      censor:2
+      audit_state:2
     })
   }
 

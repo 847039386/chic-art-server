@@ -56,7 +56,6 @@ export class ProjectOrderCustomerController {
   @ApiQuery({ name: 'state' ,description:'订单状态' ,required:false})
   @ApiQuery({ name: 'page' ,description:'当前页数' ,required:false})
   @ApiQuery({ name: 'limit' ,description:'每页数量' ,required:false})
-  
   @ApiOperation({ summary: '根据用户ID获取用户所有项目订单', description: '根据用户ID获取用户所有项目订单，带分页' }) 
   async getAllbyUserId(@Query() query ,@Request() req){
     try {

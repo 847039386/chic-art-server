@@ -36,5 +36,5 @@ export class SearchCompanyDto {
     state ?:number
     @ApiProperty({ description: '审核状态', type: Number })
     @IsString()
-    censor ?:number
+    audit_state ?:number
 }

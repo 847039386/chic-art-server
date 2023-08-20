@@ -24,6 +24,7 @@ import { MessageModule } from './modules/message/message.module';
 import { ProjectOrderEmployeeModule } from './modules/project_order_employee/project_order_employee.module';
 import { ProjectOrderCustomerModule } from './modules/project_order_customer/project_order_customer.module';
 import { ProjectOrderCameraModule } from './modules/project_order_camera/project_order_camera.module';
+import { CompanyCameraModule } from './modules/company_camera/company_camera.module';
 
 @Module({
   imports: [
@@ -49,7 +50,8 @@ import { ProjectOrderCameraModule } from './modules/project_order_camera/project
     MessageModule,
     ProjectOrderEmployeeModule,
     ProjectOrderCustomerModule,
-    ProjectOrderCameraModule
+    ProjectOrderCameraModule,
+    CompanyCameraModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -27,6 +27,9 @@ export class ProjectOrderEmployeeService {
       {
         $match : { user_id :new Types.ObjectId(user_id) }
       },
+      { 
+        $sort: { "create_time": -1 } 
+      },
       {
         $lookup: {
           from: "project_order",
@@ -74,7 +77,6 @@ export class ProjectOrderEmployeeService {
           rows:[
             { $skip:(page - 1) * limit },
             { $limit: limit} ,
-            {$sort :{ "create_time": 1 }}
           ]
         }
       },

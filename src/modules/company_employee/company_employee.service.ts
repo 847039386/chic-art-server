@@ -4,6 +4,7 @@ import { UpdateCompanyEmployeeDto } from './dto/update-company_employee.dto';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model, Types } from 'mongoose';
 import { BaseException, ResultCode } from 'src/shared/utils/base_exception.util';
+import { CURD } from 'src/shared/utils/curd.util';
 
 @Injectable()
 export class CompanyEmployeeService {
@@ -42,6 +43,11 @@ export class CompanyEmployeeService {
     return await this.companyEmployeeSchema.findByIdAndRemove(id)
   }
 
+  async findAll(page :number ,limit :number ,options ? :object) {
+    const curd = new CURD(this.companyEmployeeSchema)
+    return curd.pagination(page,limit,options || {});
+  }
+
   // 是否可操作，这里不是管理员权限，只有员工权限
   async isAllowOperate(company_id :string ,user_id :string){
     let e_company = await this.companyEmployeeSchema.findOne({ 
@@ -78,4 +84,72 @@ export class CompanyEmployeeService {
     })
   }
 
+
+  async findCompanysByUserId(user_id :string ,page :number ,limit :number ) {
+
+    page = Number(page);
+    limit = Number(limit);
+    user_id = user_id;
+
+    let aggregates :any = [
+      {
+        $match : { user_id :new Types.ObjectId(user_id) }
+      },
+      { 
+        $sort: { "create_time": -1 } 
+      },
+      {
+        $lookup: {
+          from: "company",
+          localField: "company_id",
+          foreignField: "_id",
+          as: "company_id"
+        }
+      },
+      {
+        $unwind: "$company_id"
+      },
+      {
+        // 未被封禁和审核通过的
+        $match : { 'company_id.state' : 0  ,'company_id.audit_state' : 0 }
+      },
+      {
+        $lookup: {
+          from: "tag",
+          localField: "company_id.tag_ids",
+          foreignField: "_id",
+          as: "company_id.tag_ids"
+        }
+      },
+      {
+        $facet :{
+          total: [{ $count:"count" }],
+          rows:[
+            { $skip:(page - 1) * limit },
+            { $limit: limit} ,
+          ]
+        }
+      },
+      {
+        $project: {
+            data:'$rows',
+            total: {$arrayElemAt: [ "$total.count", 0 ]},
+            
+        }
+      },
+    ]
+
+    let result :any = await this.companyEmployeeSchema.aggregate(aggregates)
+    let rows = result[0].data
+    let total = result[0].total || 0;
+    return {
+      currentPage :page,
+      pageSize :limit,
+      totalPage: total ? Math.ceil(total / limit) : 1,
+      total :total,
+      rows :rows
+    };
+  }
+
 }
+

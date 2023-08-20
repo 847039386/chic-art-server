@@ -24,6 +24,7 @@ export class CompanyEmployeeController {
   async create(@Body() dto: CreateCompanyEmployeeDto ,@Request() req) {
     // token中的userid就是登陆人
     let req_user_id = req.user.id;
+    console.log(req.user.id)
     try {
       if(dto.company_id){
         let company :any = await this.companyService.findById(dto.company_id)
@@ -79,6 +80,31 @@ export class CompanyEmployeeController {
       }else{
         throw new BaseException(ResultCode.COMMON_PARAM_ERROR,{})
       }
+    } catch (error) {
+      throw new BaseException(ResultCode.ERROR,{},error)
+    }
+  }
+
+  @Get('list_by_userid')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @ApiQuery({ name: 'page' ,description:'当前页数' ,required :false})
+  @ApiQuery({ name: 'limit' ,description:'每页数量' ,required :false})
+  @ApiOperation({ summary: '公司员工列表', description: '根据公司ID查询公司所有员工' }) 
+  async findCompanysByUserId(@Query() query ,@Request() req) {
+    try {
+      let page = 1;
+      let limit = 10;
+      let user_id = req.user.id
+      page = Number(query.page) || 1;
+      limit = Number(query.limit) || 10;
+      console.log(user_id)
+      // let result = await this.companyEmployeeService.findAll(page,limit,{
+      //   conditions :{ user_id },
+      //   populate : { path:'company_id'}
+      // })
+      let result = await this.companyEmployeeService.findCompanysByUserId(user_id,page,limit)
+      return apiAmendFormat(result)
     } catch (error) {
       throw new BaseException(ResultCode.ERROR,{},error)
     }
@@ -195,6 +221,22 @@ export class CompanyEmployeeController {
       }else{
         throw new BaseException(ResultCode.COMMON_PARAM_ERROR,{})
       }
+    } catch (error) {
+      throw new BaseException(ResultCode.ERROR,{},error)
+    }
+  }
+
+  @Get('one_uc_info')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @ApiQuery({ name: 'company_id' ,description:'当前页数' ,required :false})
+  @ApiOperation({ summary: '获取员工在公司的身份信息', description: '根据token获取员工在公司的身份信息' }) 
+  async findOneByUCInfo(@Query('company_id') company_id ,@Request() req) {
+    try {
+      let user_id = new Types.ObjectId(req.user.id)
+      company_id = new Types.ObjectId(company_id);
+      let result = await this.companyEmployeeService.findOne({user_id,company_id})
+      return apiAmendFormat(result)
     } catch (error) {
       throw new BaseException(ResultCode.ERROR,{},error)
     }

@@ -68,8 +68,8 @@ export class CompanyController {
       if(typeof dto.state != 'undefined' && dto.state != null){
         match = Object.assign(match,{ state :dto.state})
       }
-      if(typeof dto.censor != 'undefined' && dto.censor != null){
-        match = Object.assign(match,{ censor :dto.censor})
+      if(typeof dto.audit_state != 'undefined' && dto.audit_state != null){
+        match = Object.assign(match,{ audit_state :dto.audit_state})
       }
       let data =  await this.companyService.findAll(page,limit,{ populate:'user_id tag_ids' ,conditions: match });
       return apiAmendFormat(data,{
@@ -80,7 +80,7 @@ export class CompanyController {
     }
   }
 
-  @Post('censor_list')
+  @Post('list_audit_allow')
   @ApiOperation({ summary: '公司审核列表', description: '公司审核列表' })
   async findCensorAll(@Body() dto :SearchCompanyDto) {
     try {
@@ -92,10 +92,10 @@ export class CompanyController {
       if(dto.name){
         match = Object.assign(match,{ name : new RegExp(dto.name,'i') })
       }
-      if(typeof dto.censor != 'undefined' && dto.censor != null){
-        match = Object.assign(match,{ censor :dto.censor})
+      if(typeof dto.audit_state != 'undefined' && dto.audit_state != null){
+        match = Object.assign(match,{ audit_state :dto.audit_state})
       }else{
-        match = Object.assign(match,{ censor :{$in: [1,2]}})
+        match = Object.assign(match,{ audit_state :{$in: [1,2]}})
       }
       let data =  await this.companyService.findAll(page,limit,{ populate:'user_id' ,conditions: match });
       return apiAmendFormat(data,{
@@ -158,23 +158,23 @@ export class CompanyController {
     }
   }
 
-  @Patch('up_censor_allow')
+  @Patch('up_audit_allow')
   @ApiQuery({ name: 'id' ,description:'公司ID'})
   @ApiOperation({ summary: '审核公司通过', description: '根据id审核公司通过' })
   async updateCensorAllow(@Query('id') id) {
     try {
-      return apiAmendFormat(await this.companyService.censorAllow(id))
+      return apiAmendFormat(await this.companyService.auditAllow(id))
     } catch (error) {
       throw new BaseException(ResultCode.ERROR,{},error)
     }
   }
 
-  @Patch('up_censor_not_allow')
+  @Patch('up_audit_not_allow')
   @ApiQuery({ name: 'id' ,description:'公司ID'})
   @ApiOperation({ summary: '审核公司拒绝', description: '根据id审核公司拒绝' })
   async updateCensorNotAllow(@Query('id') id) {
     try {
-      return apiAmendFormat(await this.companyService.censorNotAllow(id))
+      return apiAmendFormat(await this.companyService.auditNotAllow(id))
     } catch (error) {
       throw new BaseException(ResultCode.ERROR,{},error)
     }

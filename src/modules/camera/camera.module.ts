@@ -6,6 +6,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { CounterModule } from '../counter/counter.module';
 
 @Module({
+  exports:[
+    MongooseModule.forFeature([{ name: 'Camera', schema: CameraSchema }]),
+  ],
   controllers: [CameraController],
   providers: [CameraService],
   imports: [

@@ -97,7 +97,7 @@ export class UserService {
         },
     ])
     let rows = result[0].data
-    let total = result[0].total
+    let total = result[0].total || 0
     if(rows && rows.length){
       rows = rows.map((item) => {
         if(item.group[0] && item.group[0].user_group.length == 0){

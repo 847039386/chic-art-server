@@ -76,18 +76,71 @@ export class CameraService {
     return curd.pagination(page,limit,options || {});
   }
 
-  // 根据公司ID获取公司可以操作的摄像头列表
-  async findByCompanyId(company_id :string){
-    return await this.cameraSchema.find({ company_id :new Types.ObjectId(company_id) })
+  async findAllHaveCompany(page :number ,limit :number ,match :any){
+
+    page = page || 1
+    limit = limit || 10
+
+    let result :any = await this.cameraSchema.aggregate([
+        {
+          $match: match
+        },
+        {
+          $lookup:{
+            from:'company_camera',  // 关联的集合
+            localField:'_id',  // 本地关联的字段
+            foreignField:'camera_id',  // 对方集合关联的字段
+            as:'company_camera',  // 结果字段名,
+          },
+        },
+        {
+          $unwind: {
+            path:"$company_camera",
+            preserveNullAndEmptyArrays:true,
+          } 
+        },
+        {
+          $lookup:{
+            from:'company',  // 关联的集合
+            localField:'company_camera.company_id',  // 本地关联的字段
+            foreignField:'_id',  // 对方集合关联的字段
+            as:'company_camera.company_id',  // 结果字段名,
+          },
+        },
+        {
+          $unwind: {
+            path:"$company_camera.company_id",
+            preserveNullAndEmptyArrays:true,
+          } 
+        },
+        {
+          $facet :{
+            total: [{ $count:"count" }],
+            rows:[
+              { $skip:(page - 1) * limit },
+              { $limit: limit} ,
+              {$sort :{ "create_time": 1 }}
+            ]
+          }
+        },
+        {
+          $project: {
+              data:'$rows',
+              total: {$arrayElemAt: [ "$total.count", 0 ]},
+              
+          }
+        },
+    ])
+    let rows = result[0].data
+    let total = result[0].total || 0
+
+    return {
+      currentPage :page,
+      pageSize :limit,
+      totalPage: total ? Math.ceil(total / limit) : 1,
+      total :total,
+      rows :rows
+    };
   }
 
-  // 管理员分配摄像头
-  async assignCompany(id :string ,company_id:string){
-    return await this.cameraSchema.findByIdAndUpdate(id ,{ company_id : new Types.ObjectId(company_id) ,state: 2 })
-  }
-
-  // 管理员撤销分配摄像头
-  async unAssignCompany(id :string ){
-    return await this.cameraSchema.findByIdAndUpdate(id ,{ company_id : null ,state: 0 })
-  }
 }

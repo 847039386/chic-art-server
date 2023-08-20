@@ -2,7 +2,6 @@
 // 角色表
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { Company } from 'src/modules/company/schema/company.schema';
 
 export type CameraDocument = Camera & Document;
 
@@ -14,9 +13,6 @@ export type CameraDocument = Camera & Document;
     }
 })
 export class Camera extends Document {
-    // 公司ID,
-    @Prop({ type: Types.ObjectId, ref: 'Company' ,default :null })
-    company_id: Company
     // 摄像头名称
     @Prop({ required: true })
     name: string

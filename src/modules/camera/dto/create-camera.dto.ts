@@ -35,3 +35,20 @@ export class SearchCameraDto {
     @IsString()
     iccid ?:number
 }
+
+
+export class SearchCameraDCDto {
+    @ApiProperty({ description: '页数', type: Number ,example :1 })
+    @IsInt()
+    page ?:number
+    @ApiProperty({ description: '每页数量', type: Number ,example :10 })
+    @IsInt()
+    limit ?:number
+    @ApiProperty({ description: '摄像头状态', type: String })
+    @IsString()
+    @IsString()
+    state ?:number
+    @ApiProperty({ description: '摄像头编号', type: Number })
+    @IsString()
+    no ?:number
+}

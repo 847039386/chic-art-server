@@ -42,7 +42,7 @@ export class Company extends Document {
      * 如果不允许通过的话，逻辑将此变量改成2，用户还可以继续更改公司信息
      */
     @Prop({ required: true ,default :1 })
-    censor: number
+    audit_state: number
     // 标签数组多个
     @Prop({  })
     tags: string
