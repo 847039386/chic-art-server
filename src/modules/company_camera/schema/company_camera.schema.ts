@@ -25,6 +25,14 @@ export class CompanyCamera extends Document {
     // 到期时间,
     @Prop({ type: Date, required: true, default:Date.now() })
     expire_time: Date
+    /**
+     * 状态
+     * 0：空闲
+     * 1：工作中
+     */
+    @Prop({ type: Number, required: true, default:0 })
+    state: number
+
 
 }
 

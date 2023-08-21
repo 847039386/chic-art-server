@@ -22,9 +22,58 @@ export class CompanyCameraService {
     return curd.pagination(page,limit,options || {});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} companyCamera`;
+  async findById(id: string) {
+    return await this.companyCameraSchema.findById(id).populate('camera_id');
   }
+
+  async findByIdAndPOrder(id: string) {
+    let result = await this.companyCameraSchema.aggregate([
+      {
+        $match: { _id :new Types.ObjectId(id) }
+      },
+      {
+        $lookup:{
+          from:'camera',  
+          localField:'camera_id', 
+          foreignField:'_id',  
+          as:'camera_id',  
+        },
+      },
+      {
+        $unwind: '$camera_id'
+      },
+      {
+        $lookup:{
+          from:'project_order_camera',  
+          localField:'_id',  
+          foreignField:'company_camera_id', 
+          as:'project_order_camera_id',  
+        },
+      },
+      {
+        $unwind: {
+          path:"$project_order_camera_id",
+          preserveNullAndEmptyArrays:true,
+        } 
+      },
+      {
+        $lookup:{
+          from:'project_order',  
+          localField:'project_order_camera_id.project_order_id', 
+          foreignField:'_id',  
+          as:'project_order_id',  
+        },
+      },
+      {
+        $unwind: {
+          path:"$project_order_id",
+          preserveNullAndEmptyArrays:true,
+        } 
+      },
+    ])
+    return result[0]
+  }
+
 
   async isExist(dto :AssignCameraToCompanyDto){
     let result = await this.companyCameraSchema.findOne({

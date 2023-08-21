@@ -20,7 +20,7 @@ export class ProjectOrderCameraController {
   async create(@Body() dto: CreateProjectOrderCameraDto) {
     try {
 
-      let cpc = await this.projectOrderCameraService.findOne({ camera_id: new Types.ObjectId(dto.camera_id) , project_order_id: new Types.ObjectId(dto.project_order_id)})
+      let cpc = await this.projectOrderCameraService.findOne({ company_camera_id: new Types.ObjectId(dto.company_camera_id) , project_order_id: new Types.ObjectId(dto.project_order_id)})
       if(!cpc){
         let data =  await this.projectOrderCameraService.create(dto);
         return apiAmendFormat(data,{

@@ -53,6 +53,50 @@ export class CompanyCameraController {
     }
   }
 
+  @Get('list_by_companyid_assign')
+  @ApiQuery({ name: 'page' ,description:'当前页数' ,required:false})
+  @ApiQuery({ name: 'limit' ,description:'每页数量' ,required:false})
+  @ApiQuery({ name: 'company_id' ,description:'公司ID' ,required:false})
+  @ApiOperation({ summary: '获取公司可分配的摄像头', description: '根据公司ID获取公司可分配的摄像头' }) 
+  async findByCompanyIdAssignList(@Query() query) {
+    try {
+      let today = new Date(Date.now())
+      let company_id = new Types.ObjectId(query.company_id)
+      let page = Number(query.page) || 1
+      let limit = Number(query.limit) || 10
+      let result =  await this.companyCameraService.findAll(page,limit,{ 
+        populate :{
+          path:'camera_id'
+        },
+        conditions: { 
+          company_id,
+          state : 0,
+          expire_time : { "$gt" : today } 
+        } 
+      });
+      return apiAmendFormat(result,{
+        isTakeResponse :false,
+      })
+    } catch (error) {
+      throw new BaseException(ResultCode.ERROR,{},error)
+    }
+  }
+
+  @Get('info')
+  @ApiQuery({ name: 'id' ,description:'公司摄像头关系表ID'})
+  @ApiOperation({ summary: '公司摄像头信息', description: '根据id获取公司摄像头信息' }) 
+  async getById(@Query('id') id: string) {
+    try {
+      if(id){
+        return apiAmendFormat(await this.companyCameraService.findByIdAndPOrder(id))
+      }else{
+        throw new BaseException(ResultCode.COMMON_PARAM_ERROR,{})
+      }
+    } catch (error) {
+      throw new BaseException(ResultCode.ERROR,{},error)
+    }
+  }
+
   @Delete('del')
   @ApiQuery({ name: 'id' ,description:'公司摄像头关系表ID'})
   @ApiOperation({ summary: '删除给公司分配的摄像头', description: '根据id删除给公司分配的摄像头' }) 

@@ -58,6 +58,10 @@ export class ResultCode {
     static PROJECT_ORDER_CAMERA_IS_EXIST = { code :21301 ,message:"请不要重复添加监控"} 
     // 公司摄像头关系表
     static COMPANY_CAMERA_IS_EXIST = { code :21401 ,message:"不可以重复分配摄像头"} 
+    static COMPANY_CAMERA_EXPIRE = { code :21402 ,message:"公司摄像头已过期"} 
+    static COMPANY_CAMERA_IS_WORK = { code :21403 ,message:"公司摄像头已经在工作中了，不允许添加"} 
+
+    
 }
 
 

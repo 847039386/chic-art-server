@@ -3,7 +3,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ProjectOrder } from 'src/modules/project_order/schema/project_order.schema'
 import { Document, Types } from 'mongoose';
-import { Camera } from 'src/modules/camera/schema/camera.schema';
+import { CompanyCamera } from 'src/modules/company_camera/schema/company_camera.schema';
 
 export type ProjectOrderCameraDocument = ProjectOrderCamera & Document;
 
@@ -19,8 +19,8 @@ export class ProjectOrderCamera extends Document {
     @Prop({ required:true ,default:'监控'})
     name:string
     // 摄像头ID
-    @Prop({ type: Types.ObjectId, ref: 'Camera' ,required:true })
-    camera_id: Camera
+    @Prop({ type: Types.ObjectId, ref: 'CompanyCamera' ,required:true })
+    company_camera_id: CompanyCamera
     // 工程订单ID,
     @Prop({ type: Types.ObjectId, ref: 'ProjectOrder' ,required:true })
     project_order_id: ProjectOrder
