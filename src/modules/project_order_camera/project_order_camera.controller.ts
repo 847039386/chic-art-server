@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete ,Query, UseGuards } from '@nestjs/common';
 import { ProjectOrderCameraService } from './project_order_camera.service';
 import { CreateProjectOrderCameraDto } from './dto/create-project_order_camera.dto';
-import { UpdateProjectOrderCameraDto } from './dto/update-project_order_camera.dto';
+import { UpdateProjectOrderCameraNameDto ,UpdateProjectOrderCameraStateDto } from './dto/update-project_order_camera.dto';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { apiAmendFormat } from 'src/shared/utils/api.util';
 import { BaseException, ResultCode } from 'src/shared/utils/base_exception.util';
@@ -58,6 +58,55 @@ export class ProjectOrderCameraController {
       }else{
         throw new BaseException(ResultCode.COMMON_PARAM_ERROR,{})
       }
+    } catch (error) {
+      throw new BaseException(ResultCode.ERROR,{},error)
+    }
+  }
+
+  @Get('info')
+  @ApiQuery({ name: 'id' ,description:'项目订单摄像头ID'})
+  @ApiOperation({ summary: '项目订单摄像头关系信息', description: '项目订单摄像头关系信息' }) 
+  async findInfoById(@Query('id') id: string) {
+    try {
+      if(id){
+        return apiAmendFormat(await this.projectOrderCameraService.findById(id))
+      }else{
+        throw new BaseException(ResultCode.COMMON_PARAM_ERROR,{})
+      }
+    } catch (error) {
+      throw new BaseException(ResultCode.ERROR,{},error)
+    }
+  }
+
+  @Patch('up_name')
+  @ApiOperation({ summary: '修改订单摄像头别名', description: '修改订单摄像头别名' }) 
+  async updateInfoName(@Body() dto: UpdateProjectOrderCameraNameDto) {
+    try {
+      let namePattern = /^.{1,20}$/
+      if(!namePattern.test(dto.name)){
+        throw new BaseException(ResultCode.PROJECT_ORDER_CAMERA_NAME_LIMIT,{})
+      }
+      if(!dto.id){
+        throw new BaseException(ResultCode.COMMON_PARAM_ERROR,{})
+      }
+      return apiAmendFormat(await this.projectOrderCameraService.findOneAndUpdate(dto.id,{ name : dto.name }))
+    } catch (error) {
+      throw new BaseException(ResultCode.ERROR,{},error)
+    }
+  }
+
+  @Patch('up_state')
+  @ApiOperation({ summary: '修改订单摄像头状态', description: '修改订单摄像头状态' }) 
+  async updateInfoState(@Body() dto: UpdateProjectOrderCameraStateDto) {
+    try {
+      let state = Number(dto.state)
+      if(isNaN(state) || state > 1){
+        state = 0;
+      }
+      if(!dto.id){
+        throw new BaseException(ResultCode.COMMON_PARAM_ERROR,{})
+      }
+      return apiAmendFormat(await this.projectOrderCameraService.findOneAndUpdate(dto.id,{ state }))
     } catch (error) {
       throw new BaseException(ResultCode.ERROR,{},error)
     }

@@ -104,4 +104,62 @@ export class ProjectOrderController {
     }
   }
 
+  @Patch('up_name')
+  @ApiQuery({ name: 'id' ,description:'工程订单ID'})
+  @ApiQuery({ name: 'name' ,description:'工程订单名称'})
+  @ApiOperation({ summary: '根据ID修改项目名称', description: '根据ID修改项目名称' }) 
+  async updateInfoName(@Query() query) {
+    try {
+      const id = query.id;
+      const name = query.name;
+      let namePattern = /^[0-9A-Za-z\u4e00-\u9fa5\s]{1,16}$/;
+      if(!namePattern.test(name)){
+        throw new BaseException(ResultCode.PROJECT_ORDER_NAME_LIMIT,{})
+      }
+      if(!id){
+        throw new BaseException(ResultCode.COMMON_PARAM_ERROR,{})
+      }
+      
+      return apiAmendFormat(await this.projectOrderService.updateById(id,{ name}))
+
+    } catch (error) {
+      throw new BaseException(ResultCode.ERROR,{},error)
+    }
+  }
+
+  @Patch('up_address')
+  @ApiQuery({ name: 'id' ,description:'工程订单ID'})
+  @ApiQuery({ name: 'address' ,description:'工程订单地址'})
+  @ApiOperation({ summary: '根据ID修改项目地址', description: '根据ID修改项目地址' }) 
+  async updateInfoAddress(@Query() query) {
+    try {
+      const id = query.id;
+      const address = query.address;
+      let addressPattern = /^.{2,120}$/;
+      if(!addressPattern.test(address)){
+        throw new BaseException(ResultCode.PROJECT_ORDER_ADDRESS_LIMIT,{})
+      }
+      if(!id){
+        throw new BaseException(ResultCode.COMMON_PARAM_ERROR,{})
+      }
+      return apiAmendFormat(await this.projectOrderService.updateById(id,{ address }))
+    } catch (error) {
+      throw new BaseException(ResultCode.ERROR,{},error)
+    }
+  }
+
+  @Delete('del')
+  @ApiQuery({ name: 'id' ,description:'工程订单ID'})
+  @ApiOperation({ summary: '根据ID删除工程订单', description: '根据ID删除工程订单' }) 
+  async remove(@Query('id') id) {
+    try {
+      if(!id){
+        throw new BaseException(ResultCode.COMMON_PARAM_ERROR,{})
+      }
+      return apiAmendFormat(await this.projectOrderService.remove(id))
+    } catch (error) {
+      throw new BaseException(ResultCode.ERROR,{},error)
+    }
+  }
+
 }

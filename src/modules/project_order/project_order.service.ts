@@ -10,8 +10,13 @@ import { BaseException, ResultCode } from 'src/shared/utils/base_exception.util'
 export class ProjectOrderService {
 
   constructor(
+    @InjectModel('Company') private readonly companySchema: Model<any>,
     @InjectModel('ProjectOrder') private readonly projectOrderSchema: Model<any>,
+    @InjectModel('CompanyCamera') private readonly companyCameraSchema: Model<any>,
+    @InjectModel('CompanyEmployee') private readonly companyEmployeeSchema: Model<any>,
     @InjectModel('ProjectOrderEmployee') private readonly projectOrderEmployeeSchema: Model<any>,
+    @InjectModel('ProjectOrderCustomer') private readonly projectOrderCustomerSchema: Model<any>,
+    @InjectModel('ProjectOrderCamera') private readonly projectOrderCameraSchema: Model<any>,
     @InjectConnection() private readonly connection: mongoose.Connection
   ){}
 
@@ -20,6 +25,25 @@ export class ProjectOrderService {
     session.startTransaction();
     let result;
     try {
+      let fzr_user_id = null;
+      let fzr_company_employee_id = null;
+      // 获取公司员工
+      let ce_info = await this.companyEmployeeSchema.findOne({ user_id : new Types.ObjectId(user_id) ,company_id:new Types.ObjectId(dto.company_id)}).session(session)
+      if(ce_info){
+        if(ce_info.identity_type != 2){
+          throw new BaseException(ResultCode.ERROR,{})
+        }else{
+          fzr_company_employee_id = ce_info._id.toString();
+          fzr_user_id = ce_info.user_id;
+        }
+      }else{
+        let company_info = await this.companySchema.findById(dto.company_id).session(session)
+        if(!company_info.user_id){
+          throw new BaseException(ResultCode.ERROR,{})
+        }else{
+          fzr_user_id = company_info.user_id;
+        }
+      }
       const projectOrder = new this.projectOrderSchema({
         name:dto.name,
         user_id: new Types.ObjectId(user_id),
@@ -31,14 +55,21 @@ export class ProjectOrderService {
       })
       result = await projectOrder.save({ session })
       let employee_ids = dto.employee_ids;
-      employee_ids.push({
-        _id :null,  //公司员工ID，为空相当于是负责人
-        user_id,
-      })
       // 去重数组
       employee_ids = employee_ids.filter((item, index, arr) => { 
         return arr.findIndex(t => t.user_id === item.user_id) === index; 
       });
+      // 走这条代码的时候，订单负责人一定是员工，为了防止他添加自己，过滤
+      if(fzr_company_employee_id){
+        employee_ids = employee_ids.filter((item) => { 
+          return item._id != fzr_company_employee_id
+        });
+      }
+      // 添加的这条数据证明他没有_id=true证明他没有company_employee_id，这里虽然他有这个ID但是依旧去除掉，在该表里为空证明他是项目负责人
+      employee_ids.push({
+        _id :null,  //公司员工ID，为空相当于是负责人
+        user_id,
+      })
       let project_order_id = result._id
       let employees_schemas = employee_ids.map((item) => {
         let io_employee = {
@@ -72,6 +103,43 @@ export class ProjectOrderService {
 
   async updateById(id :string ,dto :any) {
     return await this.projectOrderSchema.findByIdAndUpdate(id,dto);
+  }
+
+  async remove(id :string) {
+    let session = await this.connection.startSession(); 
+    session.startTransaction();
+    let result;
+    try {
+      
+      let cameraList = await this.projectOrderCameraSchema.find({ project_order_id : new Types.ObjectId(id) });
+      
+      if(cameraList && cameraList.length > 0){
+        let company_camera_ids = []
+        cameraList.forEach((item) => {
+          company_camera_ids.push(item.company_camera_id)
+        })
+        // 删除订单监控表，此时公司监控状态依旧为工作中
+        await this.projectOrderCameraSchema.deleteMany({ project_order_id : new Types.ObjectId(id) }).session(session)
+        // 根据订单监控表里的值修改所有在该订单内的公司监控状态为空闲
+        await this.companyCameraSchema.updateMany({_id: {$in: company_camera_ids}},{ state :0 })
+      }
+      // 删除订单客户表，只有该表删除后，客户才不会在自己的订单列表显示订单
+      await this.projectOrderCustomerSchema.deleteMany({ project_order_id : new Types.ObjectId(id) }).session(session)
+      // 删除订单员工表，只有该表删除后，员工才不会在自己的订单列表显示订单
+      await this.projectOrderEmployeeSchema.deleteMany({ project_order_id : new Types.ObjectId(id) }).session(session)
+      // 删除订单
+      result = await this.projectOrderSchema.findByIdAndRemove(id).session(session)
+
+      // throw new BaseException(ResultCode.ERROR,{})
+
+      await session.commitTransaction();
+    } catch (error) {
+      await session.abortTransaction();
+      throw new BaseException(ResultCode.ERROR,{},error)
+    }finally{
+      await session.endSession();
+    }
+    return result;
   }
 
 }

@@ -56,12 +56,19 @@ export class ResultCode {
     static PROJECT_ORDER_CUSTOMER_IS_EXIST_AUDIT = { code :21201 ,message:"您已加入该订单，请等待审核，您可以联系项目负责人"} 
     // 项目订单与监控关系表
     static PROJECT_ORDER_CAMERA_IS_EXIST = { code :21301 ,message:"请不要重复添加监控"} 
+    static PROJECT_ORDER_CAMERA_NAME_LIMIT = { code :21302 ,message:"项目监控别名超出限制，应至少为1-20位"} 
+    static PROJECT_ORDER_CAMERA_IS_NOT = { code :21303 ,message:"订单监控不存在"} 
     // 公司摄像头关系表
     static COMPANY_CAMERA_IS_EXIST = { code :21401 ,message:"不可以重复分配摄像头"} 
     static COMPANY_CAMERA_EXPIRE = { code :21402 ,message:"公司摄像头已过期"} 
     static COMPANY_CAMERA_IS_WORK = { code :21403 ,message:"公司摄像头已经在工作中了，不允许添加"} 
+    static COMPANY_CAMERA_IS_NOT = { code :21404 ,message:"公司摄像头不存在"} 
+    // 监控
+    static CAMERA_IS_NOT = { code :21501 ,message:"摄像头不存在"} 
+    // 订单
+    static PROJECT_ORDER_NAME_LIMIT = { code :21601 ,message:"项目名称只允许数字英文或汉文还有空格1-16位"} 
+    static PROJECT_ORDER_ADDRESS_LIMIT = { code :21602 ,message:"项目地址的字符长度应在2-120个字符之间"} 
 
-    
 }
 
 

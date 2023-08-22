@@ -6,6 +6,9 @@ import { ProjectOrderCameraSchema } from './schema/project_order_camera.schema';
 import { CompanyCameraModule } from '../company_camera/company_camera.module';
 
 @Module({
+  exports:[
+    MongooseModule.forFeature([{ name: 'ProjectOrderCamera', schema: ProjectOrderCameraSchema }]),
+  ],
   controllers: [ProjectOrderCameraController],
   providers: [ProjectOrderCameraService],
   imports: [

@@ -18,11 +18,11 @@ export class ProjectOrderCustomerController {
   @ApiOperation({ summary: '根据项目订单ID添加客户', description: '根据项目订单ID添加客户' }) 
   async create(@Body() dto: CreateProjectOrderCustomerDto ,@Request() req) {
     try {
-      let req_user_id = new Types.ObjectId(req.user.id);
+      let user_id = new Types.ObjectId(req.user.id);
       let project_order_id = new Types.ObjectId(dto.project_order_id)
-      let poi = await this.projectOrderCustomerService.findOne({ req_user_id,project_order_id })
+      let poi = await this.projectOrderCustomerService.findOne({ user_id,project_order_id })
       if(!poi){
-        let result = await this.projectOrderCustomerService.create(req_user_id,project_order_id);
+        let result = await this.projectOrderCustomerService.create(user_id,project_order_id);
         return apiAmendFormat(result)
       }else{
         if(poi.state == 0){
