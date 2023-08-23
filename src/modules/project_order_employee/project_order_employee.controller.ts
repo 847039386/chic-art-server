@@ -11,7 +11,9 @@ import { AuthGuard } from '@nestjs/passport';
 @Controller('api/project-order-employee')
 @ApiTags('项目订单公司员工接口')
 export class ProjectOrderEmployeeController {
-  constructor(private readonly projectOrderEmployeeService: ProjectOrderEmployeeService) {}
+  constructor(
+    private readonly projectOrderEmployeeService: ProjectOrderEmployeeService,
+  ){}
 
 
   @Get('project_order_list')
@@ -55,5 +57,37 @@ export class ProjectOrderEmployeeController {
       throw new BaseException(ResultCode.ERROR,{},error)
     }
   }
+
+  @Post('add')
+  @ApiOperation({ summary: '根据项目订单ID添加员工', description: '根据项目订单ID添加员工' }) 
+  async create(@Body() dto: CreateProjectOrderEmployeeDto ,@Request() req) {
+    try {
+      let result = await this.projectOrderEmployeeService.create(dto);
+      return apiAmendFormat(result)
+    } catch (error) {
+      throw new BaseException(ResultCode.ERROR,{},error)
+    }
+  }
+
+
+
+  @Delete('del')
+  @ApiQuery({ name: 'id' ,description:'订单员工表ID'})
+  @ApiOperation({ summary: '删除订单员工', description: '删除订单员工' }) 
+  async remove(@Query('id') id: string) {
+    try {
+      if(id){
+        return apiAmendFormat(await this.projectOrderEmployeeService.remove(id))
+      }else{
+        throw new BaseException(ResultCode.COMMON_PARAM_ERROR,{})
+      }
+    } catch (error) {
+      throw new BaseException(ResultCode.ERROR,{},error)
+    }
+  }
+
+  
+
+
 
 }

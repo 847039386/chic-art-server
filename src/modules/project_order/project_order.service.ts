@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { CreateProjectOrderDto } from './dto/create-project_order.dto';
-import { UpdateProjectOrderStepDto } from './dto/update-project_order.dto';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model, Types } from 'mongoose';
 import { CURD } from 'src/shared/utils/curd.util';
@@ -25,22 +24,37 @@ export class ProjectOrderService {
     session.startTransaction();
     let result;
     try {
+      // 获取公司信息
+      let company_info = await this.companySchema.findById(dto.company_id).session(session)
+      if(company_info){
+        if(company_info.audit_state != 0){
+          // 不允许未通过审核的公司创建订单
+          throw new BaseException(ResultCode.PROJECT_ORDER_COMPANY_NOT_AUDIT,{})
+        }
+      }else{
+        //公司不存在
+        throw new BaseException(ResultCode.COMPANY_NOT_EXIST,{})
+      }
       let fzr_user_id = null;
       let fzr_company_employee_id = null;
       // 获取公司员工
       let ce_info = await this.companyEmployeeSchema.findOne({ user_id : new Types.ObjectId(user_id) ,company_id:new Types.ObjectId(dto.company_id)}).session(session)
       if(ce_info){
         if(ce_info.identity_type != 2){
-          throw new BaseException(ResultCode.ERROR,{})
+          throw new BaseException(ResultCode.COMPANY_NOT_PERMISSION,{})
         }else{
           fzr_company_employee_id = ce_info._id.toString();
           fzr_user_id = ce_info.user_id;
         }
       }else{
-        let company_info = await this.companySchema.findById(dto.company_id).session(session)
+        // 如果该用户不是公司员工，那么他有可能是公司创始人创建的订单
         if(!company_info.user_id){
-          throw new BaseException(ResultCode.ERROR,{})
+          throw new BaseException(ResultCode.USER_NOT_EXISTS,{})
         }else{
+          if(company_info.user_id != user_id){
+            //能走到这里的判断证明用户一定不是公司员工，那么他也不是公司创始人，那么他肯定没有权限
+            throw new BaseException(ResultCode.PROJECT_ORDER_NOT_PERMISSION,{})
+          }
           fzr_user_id = company_info.user_id;
         }
       }
@@ -141,5 +155,41 @@ export class ProjectOrderService {
     }
     return result;
   }
+
+  async finish(id :string) {
+    let session = await this.connection.startSession(); 
+    session.startTransaction();
+    let result;
+    try {
+      let op_info = await this.projectOrderSchema.findById(id).session(session);
+      if(!op_info){
+        throw new BaseException(ResultCode.PROJECT_ORDER_IS_NOT,{})
+      }
+      let progress_template = op_info.progress_template;
+      let step = progress_template.length - 1 || 0;
+      // 完成订单后需要将所有公司监控变为可分配
+      let cameraList = await this.projectOrderCameraSchema.find({ project_order_id : new Types.ObjectId(id) });
+      if(cameraList && cameraList.length > 0){
+        let company_camera_ids = []
+        cameraList.forEach((item) => {
+          company_camera_ids.push(item.company_camera_id)
+        })
+        // 删除订单监控表，此时公司监控状态依旧为工作中
+        await this.projectOrderCameraSchema.deleteMany({ project_order_id : new Types.ObjectId(id) }).session(session)
+        // 根据订单监控表里的值修改所有在该订单内的公司监控状态为空闲
+        await this.companyCameraSchema.updateMany({_id: {$in: company_camera_ids}},{ state :0 })
+      }
+      // 修改订单状态为完成，步数则为顶
+      result = await this.projectOrderSchema.findByIdAndUpdate(id,{ step ,state: 1 }).session(session)
+      await session.commitTransaction();
+    } catch (error) {
+      await session.abortTransaction();
+      throw new BaseException(ResultCode.ERROR,{},error)
+    }finally{
+      await session.endSession();
+    }
+    return result;
+  }
+  
 
 }

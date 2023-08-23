@@ -44,6 +44,7 @@ export class ResultCode {
     static COMPANY_IS_EXIST = { code :21001 ,message:"公司名称已被注册"} 
     static COMPANY_NOT_EXIST = { code :21002 ,message:"公司不存在"} 
     static COMPANY_USER_IS_EXIST = { code :21003 ,message:"每个用户只允许注册一家公司"} 
+    static COMPANY_NOT_PERMISSION = { code :21004 ,message:"只有公司创始人或公司管理员才可以操作此功能"}
     // 公司员工
     static COMPANY_EMPLOYEE_GROUPNAME_ERROR = { code :21101 ,message:"分组名称超出限制，应至少为1-16位"} 
     static COMPANY_EMPLOYEE_USER_ISBOSS = { code :21102 ,message:"创始人已经是公司员工"} 
@@ -58,6 +59,7 @@ export class ResultCode {
     static PROJECT_ORDER_CAMERA_IS_EXIST = { code :21301 ,message:"请不要重复添加监控"} 
     static PROJECT_ORDER_CAMERA_NAME_LIMIT = { code :21302 ,message:"项目监控别名超出限制，应至少为1-20位"} 
     static PROJECT_ORDER_CAMERA_IS_NOT = { code :21303 ,message:"订单监控不存在"} 
+    static PROJECT_ORDER_CAMERA_IF_PO_STATE = { code :21304 ,message:"订单已完成或取消，不允许添加监控"} 
     // 公司摄像头关系表
     static COMPANY_CAMERA_IS_EXIST = { code :21401 ,message:"不可以重复分配摄像头"} 
     static COMPANY_CAMERA_EXPIRE = { code :21402 ,message:"公司摄像头已过期"} 
@@ -66,8 +68,17 @@ export class ResultCode {
     // 监控
     static CAMERA_IS_NOT = { code :21501 ,message:"摄像头不存在"} 
     // 订单
-    static PROJECT_ORDER_NAME_LIMIT = { code :21601 ,message:"项目名称只允许数字英文或汉文还有空格1-16位"} 
-    static PROJECT_ORDER_ADDRESS_LIMIT = { code :21602 ,message:"项目地址的字符长度应在2-120个字符之间"} 
+    static PROJECT_ORDER_IS_NOT = { code :21601 ,message:"项目订单不存在"} 
+    static PROJECT_ORDER_NAME_LIMIT = { code :21602 ,message:"项目名称只允许数字英文或汉文还有空格1-16位"} 
+    static PROJECT_ORDER_ADDRESS_LIMIT = { code :21603 ,message:"项目地址的字符长度应在2-120个字符之间"} 
+    static PROJECT_ORDER_COMPANY_NOT_AUDIT = { code :21604 ,message:"公司尚未通过审核，暂时无法创建订单"}
+    static PROJECT_ORDER_NOT_PERMISSION = { code :21605 ,message:"您无权限操作订单功能"}
+    static PROJECT_ORDER_NOT_ALLOW = { code :21606 ,message:"项目订单已完成或取消，不允许进行更改"} 
+    // 订单员工
+    static PROJECT_ORDER_EMPLOYEE_IS_EXIST = { code :21701 ,message:"员工已加入该工单不需要重复添加"} 
+    static PROJECT_ORDER_EMPLOYEE_BAN_DEL = { code :21702 ,message:"订单员工不允许被删除，他可能是管理"} 
+    static PROJECT_ORDER_EMPLOYEE_IS_NOT = { code :21703 ,message:"订单员工不存在"} 
+    
 
 }
 

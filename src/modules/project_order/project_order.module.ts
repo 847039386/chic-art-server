@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { ProjectOrderService } from './project_order.service';
 import { ProjectOrderController } from './project_order.controller';
 
@@ -14,17 +14,18 @@ import { CompanyCameraModule } from '../company_camera/company_camera.module';
 @Module({
   exports: [
     MongooseModule.forFeature([{ name: 'ProjectOrder', schema: ProjectOrderSchema }]),
+    ProjectOrderService
   ],
   controllers: [ProjectOrderController],
   providers: [ProjectOrderService],
   imports: [
     MongooseModule.forFeature([{ name: 'ProjectOrder', schema: ProjectOrderSchema }]),
-    ProjectOrderEmployeeModule,
-    ProjectOrderCustomerModule,
-    ProjectOrderCameraModule,
+    forwardRef(() => ProjectOrderCustomerModule),
+    forwardRef(() => ProjectOrderCameraModule),
+    forwardRef(() => ProjectOrderEmployeeModule),
     CompanyEmployeeModule,
     CompanyCameraModule,
-    CompanyModule
+    CompanyModule,
   ]
 })
 export class ProjectOrderModule {}

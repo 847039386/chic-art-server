@@ -1,7 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete ,Query ,Request, UseGuards } from '@nestjs/common';
 import { ProjectOrderService } from './project_order.service';
 import { CreateProjectOrderDto, ProjectOrderListAllDto, ProjectOrderListByCompanyIdDto } from './dto/create-project_order.dto';
-import { UpdateProjectOrderStepDto } from './dto/update-project_order.dto';
 import { ApiTags ,ApiQuery ,ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { apiAmendFormat } from 'src/shared/utils/api.util';
 import { BaseException, ResultCode } from 'src/shared/utils/base_exception.util';
@@ -74,8 +73,9 @@ export class ProjectOrderController {
   }
 
   @Patch('up_step')
+  @ApiQuery({ name: 'id' ,description:'工程订单ID'})
   @ApiOperation({ summary: '根据ID查看工程订单详细信息', description: '根据ID查看工程订单详细信息' }) 
-  async updateStep(@Body() dto :UpdateProjectOrderStepDto,@Request() req) {
+  async updateStep(@Query('id') id :string ) {
     try {
       /**
        * 举例，步近器会根据进度模板数组长度进行增长
@@ -88,15 +88,24 @@ export class ProjectOrderController {
        * 所以当step >= total 的时候修改订单状态为完成
        * 这里不考虑读库做total控制，因为还得多读个库懒得写，非法操作就让他非法操作吧，反正限制了类型
        */
-      let step = Number(dto.step)
-      let total = Number(dto.total-1)
+      let project_order_info = await this.projectOrderService.findById(id);
+      if(!project_order_info){
+        throw new BaseException(ResultCode.PROJECT_ORDER_IS_NOT,{})
+      }else{
+        if(project_order_info.state !== 0){
+          // 不允许除了进行中的订单进行修改
+          throw new BaseException(ResultCode.PROJECT_ORDER_NOT_ALLOW,{})
+        }
+      }
+      let step = project_order_info.step + 1;
+      let total = project_order_info.progress_template.length - 1;
       if(isNaN(step) || isNaN(total)){
         throw new BaseException(ResultCode.ERROR,{})
       }else{
         if(step >= total){
-          return apiAmendFormat(await this.projectOrderService.updateById(dto.id,{ step ,state: 1}))
+          return apiAmendFormat(await this.projectOrderService.finish(id))
         }else{
-          return apiAmendFormat(await this.projectOrderService.updateById(dto.id,{ step }))
+          return apiAmendFormat(await this.projectOrderService.updateById(id,{ step }))
         }
       }
     } catch (error) {

@@ -7,19 +7,30 @@ import { apiAmendFormat } from 'src/shared/utils/api.util';
 import { BaseException, ResultCode } from 'src/shared/utils/base_exception.util';
 import { Types } from 'mongoose';
 import { AuthGuard } from '@nestjs/passport';
+import { ProjectOrderService } from '../project_order/project_order.service';
 
 @Controller('api/project-order-camera')
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
 @ApiTags('项目订单监控关系接口')
 export class ProjectOrderCameraController {
-  constructor(private readonly projectOrderCameraService: ProjectOrderCameraService) {}
+  constructor(
+    private readonly projectOrderCameraService: ProjectOrderCameraService,
+    private readonly projectOrderService: ProjectOrderService
+  ){}
 
   @Post('add')
   @ApiOperation({ summary: '创建项目订单与监控联系', description: '创建项目订单与监控联系' }) 
   async create(@Body() dto: CreateProjectOrderCameraDto) {
     try {
-
+      let po_info = await this.projectOrderService.findById(dto.project_order_id);
+      if(!po_info){
+        throw new BaseException(ResultCode.PROJECT_ORDER_IS_NOT,{})
+      }else{
+        if(po_info.state !== 0){
+          throw new BaseException(ResultCode.PROJECT_ORDER_CAMERA_IF_PO_STATE,{})
+        }
+      }
       let cpc = await this.projectOrderCameraService.findOne({ company_camera_id: new Types.ObjectId(dto.company_camera_id) , project_order_id: new Types.ObjectId(dto.project_order_id)})
       if(!cpc){
         let data =  await this.projectOrderCameraService.create(dto);

@@ -6,11 +6,15 @@ import { AuthGuard } from '@nestjs/passport';
 import { Types } from 'mongoose';
 import { apiAmendFormat } from 'src/shared/utils/api.util';
 import { BaseException, ResultCode } from 'src/shared/utils/base_exception.util';
+import { ProjectOrderService } from '../project_order/project_order.service';
 
 @Controller('api/project-order-customer')
 @ApiTags('客户与项目订单关系接口')
 export class ProjectOrderCustomerController {
-  constructor(private readonly projectOrderCustomerService: ProjectOrderCustomerService) {}
+  constructor(
+    private readonly projectOrderCustomerService: ProjectOrderCustomerService,
+    private readonly projectOrderService: ProjectOrderService
+  ){}
 
   @Post('add')
   @ApiBearerAuth()
@@ -20,6 +24,11 @@ export class ProjectOrderCustomerController {
     try {
       let user_id = new Types.ObjectId(req.user.id);
       let project_order_id = new Types.ObjectId(dto.project_order_id)
+      let project_order_info = await this.projectOrderService.findById(dto.project_order_id)
+      if(!project_order_info){
+        // 订单不存在
+        throw new BaseException(ResultCode.PROJECT_ORDER_IS_NOT,{})
+      }
       let poi = await this.projectOrderCustomerService.findOne({ user_id,project_order_id })
       if(!poi){
         let result = await this.projectOrderCustomerService.create(user_id,project_order_id);
