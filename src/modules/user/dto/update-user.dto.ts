@@ -6,8 +6,17 @@ export class UpdateUserStateDto {
     @IsString()
     @ApiProperty({ description: '权限ID', type: String ,example:'_id' })
     id: string
-    // 权限状态 true：开启 ，false：不开启
+    // 用户状态0正常 1，封禁
     @IsBoolean()
-    @ApiProperty({ description: '权限状态', type: String ,example:true })
-    state: boolean    
+    @ApiProperty({ description: '权限状态', type: String ,example:0 })
+    state: number    
 }
+
+export class UpdateUserAvatarDto {
+    // 图像地址
+    @IsBoolean()
+    @ApiProperty({ description: '图像地址', type: String ,example:'url' })
+    avatar: string    
+}
+
+

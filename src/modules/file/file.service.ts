@@ -11,7 +11,6 @@ export class FileService {
   constructor() {}
 
   async upload(file: Express.Multer.File) {
-    console.log(file)
     try {
       const url = await this.uploadToQiniu(file);
       const fileInfo = {

@@ -14,6 +14,10 @@ export class CreateCompanyDto {
     @IsString()
     @ApiProperty({ description: '公司名称', type: String ,example:'公司名称' })
     name: string
+    // 公司地址
+    @IsString()
+    @ApiProperty({ description: '公司地址', type: String ,example:'公司地址' })
+    address: string
     // 公司描述
     @IsString()
     @ApiProperty({ description: '公司描述', type: String ,example:'公司描述' })

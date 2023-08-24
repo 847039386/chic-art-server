@@ -13,22 +13,22 @@ import * as path from 'path';
 
 @Module({
   imports:[
-    MulterModule.registerAsync({
-      useFactory: async () => ({
-        storage: diskStorage({
-          destination: (req, file, cb) => {
-            const dest = `public/uploads`;
-            mkdirp(dest, function () {
-              return cb(null, dest);
-            });
-          },
-          filename: (req, file, cb) => {
-            const uniqueSuffix = Date.now() + '-' + nanoid();
-            cb(null, uniqueSuffix + path.extname(file.originalname));
-          },
-        }),
-      }),
-    }),
+    // MulterModule.registerAsync({
+    //   useFactory: async () => ({
+    //     storage: diskStorage({
+    //       destination: (req, file, cb) => {
+    //         const dest = `public/uploads`;
+    //         mkdirp(dest, function () {
+    //           return cb(null, dest);
+    //         });
+    //       },
+    //       filename: (req, file, cb) => {
+    //         const uniqueSuffix = Date.now() + '-' + nanoid();
+    //         cb(null, uniqueSuffix + path.extname(file.originalname));
+    //       },
+    //     }),
+    //   }),
+    // }),
   ],
   controllers: [FileController],
   providers: [FileService],

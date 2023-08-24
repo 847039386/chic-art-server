@@ -144,7 +144,7 @@ export class ProjectOrderController {
     try {
       const id = query.id;
       const address = query.address;
-      let addressPattern = /^.{2,120}$/;
+      let addressPattern = /^.{1,60}$/;
       if(!addressPattern.test(address)){
         throw new BaseException(ResultCode.PROJECT_ORDER_ADDRESS_LIMIT,{})
       }

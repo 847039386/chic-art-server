@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CreateCompanyDto } from './dto/create-company.dto';
-import { UpdateCompanyDto, UpdateCompanyWeightDto ,UpdateCompanyStateDto } from './dto/update-company.dto';
+import { UpdateCompanyDto, UpdateCompanyWeightDto ,UpdateCompanyStateDto ,UpdateCompanyLogoDto ,UpdateCompanyNameDto, UpdateCompanyDescriptionDto ,UpdateCompanyTagDto, UpdateCompanyAddressDto } from './dto/update-company.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { CURD } from 'src/shared/utils/curd.util';
@@ -9,19 +9,21 @@ import { CURD } from 'src/shared/utils/curd.util';
 export class CompanyService {
 
   constructor(
-    @InjectModel('Company') private readonly companySchema: Model<CreateCompanyDto>,
+    @InjectModel('Company') private readonly companySchema: Model<any>,
     ){}
 
 
   async create(user_id :string ,dto: CreateCompanyDto) {
-    const tag = new this.companySchema({
+
+    const company = new this.companySchema({
       logo:dto.logo,
       user_id: new Types.ObjectId(user_id),
       name : dto.name,
       description :dto.description,
-      tag_ids :dto.tag_ids
+      tag_ids :dto.tag_ids,
+      address: dto.address || '未填写地址'
     })
-    return await tag.save()
+    return await company.save()
   }
 
   // 根据公司名查找公司是否重复
@@ -51,6 +53,39 @@ export class CompanyService {
   async updateState(dto: UpdateCompanyStateDto) {
     return await this.companySchema.findByIdAndUpdate(dto.id,{
       state:dto.state
+    })
+  }
+
+  async updateLogo(dto: UpdateCompanyLogoDto) {
+    return await this.companySchema.findByIdAndUpdate(dto.id,{
+      logo:dto.logo
+    })
+  }
+
+  async updateName(dto: UpdateCompanyNameDto) {
+    return await this.companySchema.findByIdAndUpdate(dto.id,{
+      name:dto.name
+    })
+  }
+
+  async updateDescription(dto: UpdateCompanyDescriptionDto) {
+    return await this.companySchema.findByIdAndUpdate(dto.id,{
+      description:dto.description
+    })
+  }
+
+  async updateTag(dto: UpdateCompanyTagDto) {
+    let tag_ids = dto.tag_ids.map((item) =>{
+      return new Types.ObjectId(item)
+    })
+    return await this.companySchema.findByIdAndUpdate(dto.id,{
+      tag_ids
+    })
+  }
+
+  async updateAddress(dto: UpdateCompanyAddressDto) {
+    return await this.companySchema.findByIdAndUpdate(dto.id,{
+      address :dto.address
     })
   }
 

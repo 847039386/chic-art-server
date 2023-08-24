@@ -16,7 +16,7 @@ export type CompanyDocument = Company & Document;
 })
 export class Company extends Document {
     // Logo图片地址,
-    @Prop({ type:String, ref: 'User' })
+    @Prop({ type:String })
     logo: string
     // 公司创始人,
     @Prop({ type: Types.ObjectId, ref: 'User' ,required:true })
@@ -27,6 +27,9 @@ export class Company extends Document {
     // 公司名称
     @Prop({ required: true })
     name: string
+    // 公司地址
+    @Prop({ default :'未填写地址' })
+    address: string
     // 公司描述
     @Prop({ required: true })
     description: string

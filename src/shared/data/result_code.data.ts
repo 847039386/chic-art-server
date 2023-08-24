@@ -45,6 +45,10 @@ export class ResultCode {
     static COMPANY_NOT_EXIST = { code :21002 ,message:"公司不存在"} 
     static COMPANY_USER_IS_EXIST = { code :21003 ,message:"每个用户只允许注册一家公司"} 
     static COMPANY_NOT_PERMISSION = { code :21004 ,message:"只有公司创始人或公司管理员才可以操作此功能"}
+    static COMPANY_NAME_VERIFY = { code :21005 ,message:"公司名称应2至12位，可以是中文、英文或数字"}
+    static COMPANY_DESCRIPTION_VERIFY = { code :21006 ,message:"简介长度应为2-120位"}
+    static COMPANY_TAG_VERIFY = { code :21007 ,message:"公司标签最多可选5个，最少选择一个"}
+    static COMPANY_ADDRESS_VERIFY = { code :21008 ,message:"公司地址长度应在1-60个字符之间"} 
     // 公司员工
     static COMPANY_EMPLOYEE_GROUPNAME_ERROR = { code :21101 ,message:"分组名称超出限制，应至少为1-16位"} 
     static COMPANY_EMPLOYEE_USER_ISBOSS = { code :21102 ,message:"创始人已经是公司员工"} 
@@ -70,7 +74,7 @@ export class ResultCode {
     // 订单
     static PROJECT_ORDER_IS_NOT = { code :21601 ,message:"项目订单不存在"} 
     static PROJECT_ORDER_NAME_LIMIT = { code :21602 ,message:"项目名称只允许数字英文或汉文还有空格1-16位"} 
-    static PROJECT_ORDER_ADDRESS_LIMIT = { code :21603 ,message:"项目地址的字符长度应在2-120个字符之间"} 
+    static PROJECT_ORDER_ADDRESS_LIMIT = { code :21603 ,message:"项目地址的字符长度应在1-60个字符之间"} 
     static PROJECT_ORDER_COMPANY_NOT_AUDIT = { code :21604 ,message:"公司尚未通过审核，暂时无法创建订单"}
     static PROJECT_ORDER_NOT_PERMISSION = { code :21605 ,message:"您无权限操作订单功能"}
     static PROJECT_ORDER_NOT_ALLOW = { code :21606 ,message:"项目订单已完成或取消，不允许进行更改"} 

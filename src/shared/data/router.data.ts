@@ -8,7 +8,7 @@ export const baseRouter = [
     '/api/auth/register',       //本站注册
     '/api/auth/wx_login',       //微信登陆与注册
     '/api/account/wx_exist',    //微信是否注册
-    '/file/upload',       //上传图片，用户注册的时候上传头像需要用到所以不需要token
+    '/file/upload_image',       //上传图片，用户注册的时候上传头像需要用到所以不需要token
 
 
 ]

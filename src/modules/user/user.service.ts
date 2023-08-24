@@ -127,15 +127,15 @@ export class UserService {
     };
   }
  
-  async updateInfo(id ,data: any) {
+  async updateInfoById(id ,data: any) {
     return await this.userSchema.findByIdAndUpdate(id ,data)
   }
 
-  async updateState(dto: UpdateUserStateDto) {
-    return await this.userSchema.findByIdAndUpdate(dto.id,{
-      state :dto.state,
-    })
+  async findById(id :string) {
+    return await this.userSchema.findById(id)
   }
+
+  
 
   /**
    * 该方法返回用户所在的用户组包括子组，用户的所有权限，用户的所有角色，这里不返回没有开启的角色用户组与权限
