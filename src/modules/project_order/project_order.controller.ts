@@ -19,6 +19,29 @@ export class ProjectOrderController {
   async create(@Body() dto: CreateProjectOrderDto ,@Request() req) {
     try {
       let user_id = req.user.id;
+
+      let namePattern = /^[0-9A-Za-z\u4e00-\u9fa5\s]{1,16}$/;
+      if(!namePattern.test(dto.name)){
+        throw new BaseException(ResultCode.PROJECT_ORDER_NAME_VERIFY,{})
+      }
+
+
+      let customerPattern = /^[0-9A-Za-z\u4e00-\u9fa5\s]{1,16}$/;
+      if(!customerPattern.test(dto.customer)){
+        throw new BaseException(ResultCode.PROJECT_ORDER_CUSTOMER_VERIFY,{})
+      }
+
+      let phonePattern = /^\d{7,8}$|^1\d{10}$|^(0\d{2,3}-?|0\d2,3 )?[1-9]\d{4,7}(-\d{1,8})?$/;
+      if(!phonePattern.test(dto.phone)){
+        throw new BaseException(ResultCode.COMMON_PHONE_VERIFY,{})
+      }
+
+      let addressPattern = /^.{1,120}$/;
+      if(!addressPattern.test(dto.address)){
+        throw new BaseException(ResultCode.PROJECT_ORDER_ADDRESS_VERIFY,{})
+      }
+
+
       return apiAmendFormat(await this.projectOrderService.create(user_id,dto))
     } catch (error) {
       throw new BaseException(ResultCode.ERROR,{},error)
@@ -123,7 +146,7 @@ export class ProjectOrderController {
       const name = query.name;
       let namePattern = /^[0-9A-Za-z\u4e00-\u9fa5\s]{1,16}$/;
       if(!namePattern.test(name)){
-        throw new BaseException(ResultCode.PROJECT_ORDER_NAME_LIMIT,{})
+        throw new BaseException(ResultCode.PROJECT_ORDER_NAME_VERIFY,{})
       }
       if(!id){
         throw new BaseException(ResultCode.COMMON_PARAM_ERROR,{})
@@ -136,6 +159,54 @@ export class ProjectOrderController {
     }
   }
 
+  @Patch('up_customer')
+  @ApiQuery({ name: 'id' ,description:'工程订单ID'})
+  @ApiQuery({ name: 'customer' ,description:'工程订单名称'})
+  @ApiOperation({ summary: '根据ID修改对接客户', description: '根据ID修改对接客户' }) 
+  async updateInfoCustomer(@Query() query) {
+    try {
+      const id = query.id;
+      const customer = query.customer;
+      let customerPattern = /^[0-9A-Za-z\u4e00-\u9fa5\s]{1,16}$/;
+      if(!customerPattern.test(customer)){
+        throw new BaseException(ResultCode.PROJECT_ORDER_CUSTOMER_VERIFY,{})
+      }
+      if(!id){
+        throw new BaseException(ResultCode.PROJECT_ORDER_IS_NOT,{})
+      }
+      
+      return apiAmendFormat(await this.projectOrderService.updateById(id,{ customer}))
+
+    } catch (error) {
+      throw new BaseException(ResultCode.ERROR,{},error)
+    }
+  }
+
+
+  @Patch('up_phone')
+  @ApiQuery({ name: 'id' ,description:'工程订单ID'})
+  @ApiQuery({ name: 'phone' ,description:'客户电话'})
+  @ApiOperation({ summary: '根据ID修改客户电话', description: '根据ID修改客户电话' }) 
+  async updateInfoPhone(@Query() query) {
+    try {
+      const id = query.id;
+      const phone = query.phone;
+      let phonePattern = /^\d{7,8}$|^1\d{10}$|^(0\d{2,3}-?|0\d2,3 )?[1-9]\d{4,7}(-\d{1,8})?$/;
+      if(!phonePattern.test(phone)){
+        throw new BaseException(ResultCode.COMMON_PHONE_VERIFY,{})
+      }
+      if(!id){
+        throw new BaseException(ResultCode.PROJECT_ORDER_IS_NOT,{})
+      }
+      
+      return apiAmendFormat(await this.projectOrderService.updateById(id,{ phone}))
+
+    } catch (error) {
+      throw new BaseException(ResultCode.ERROR,{},error)
+    }
+  }
+
+
   @Patch('up_address')
   @ApiQuery({ name: 'id' ,description:'工程订单ID'})
   @ApiQuery({ name: 'address' ,description:'工程订单地址'})
@@ -144,9 +215,9 @@ export class ProjectOrderController {
     try {
       const id = query.id;
       const address = query.address;
-      let addressPattern = /^.{1,60}$/;
+      let addressPattern = /^.{1,120}$/;
       if(!addressPattern.test(address)){
-        throw new BaseException(ResultCode.PROJECT_ORDER_ADDRESS_LIMIT,{})
+        throw new BaseException(ResultCode.PROJECT_ORDER_ADDRESS_VERIFY,{})
       }
       if(!id){
         throw new BaseException(ResultCode.COMMON_PARAM_ERROR,{})

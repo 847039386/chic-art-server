@@ -29,6 +29,11 @@ export class CompanyEmployeeController {
       if(dto.company_id){
         let company :any = await this.companyService.findById(dto.company_id)
         if(company){
+
+          if(company.audit_state != 0){
+            throw new BaseException(ResultCode.COMPANY_AUDIT_NO)
+          }
+
           if(company.user_id){
             if(company.user_id._id == req_user_id){
               throw new BaseException(ResultCode.COMPANY_EMPLOYEE_USER_ISBOSS,{})

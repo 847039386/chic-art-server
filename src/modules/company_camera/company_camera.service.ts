@@ -88,9 +88,9 @@ export class CompanyCameraService {
     session.startTransaction();
     let result;
     try {
-      // 修改摄像头状态为2，就是已有公司使用并且是空闲状态
+      // 修改摄像头状态为1，就是该摄像头已分配给公司了
       await this.cameraSchema.findByIdAndUpdate(dto.camera_id,{
-        state : 2
+        state : 1
       }).session(session)
       // 创建摄像头与公司关系
       const companyCamera = new this.companyCameraSchema({
@@ -117,7 +117,7 @@ export class CompanyCameraService {
       let cc =  await this.companyCameraSchema.findById(id).session(session)
       let camera_id = cc.camera_id;
       if(camera_id){
-        // 修改摄像头状态为闲置，证明没有公司使用他
+        // 修改摄像头状态为闲置，证明没有公司使用他即未分配状态
         await this.cameraSchema.findByIdAndUpdate(camera_id,{
           state : 0
         }).session(session)

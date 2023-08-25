@@ -13,6 +13,7 @@ export class ProjectOrderService {
     @InjectModel('ProjectOrder') private readonly projectOrderSchema: Model<any>,
     @InjectModel('CompanyCamera') private readonly companyCameraSchema: Model<any>,
     @InjectModel('CompanyEmployee') private readonly companyEmployeeSchema: Model<any>,
+    @InjectModel('ProjectOrderNote') private readonly projectOrderNoteSchema: Model<any>,
     @InjectModel('ProjectOrderEmployee') private readonly projectOrderEmployeeSchema: Model<any>,
     @InjectModel('ProjectOrderCustomer') private readonly projectOrderCustomerSchema: Model<any>,
     @InjectModel('ProjectOrderCamera') private readonly projectOrderCameraSchema: Model<any>,
@@ -141,6 +142,8 @@ export class ProjectOrderService {
       await this.projectOrderCustomerSchema.deleteMany({ project_order_id : new Types.ObjectId(id) }).session(session)
       // 删除订单员工表，只有该表删除后，员工才不会在自己的订单列表显示订单
       await this.projectOrderEmployeeSchema.deleteMany({ project_order_id : new Types.ObjectId(id) }).session(session)
+      // 删除订单笔记
+      await this.projectOrderNoteSchema.deleteMany({ project_order_id : new Types.ObjectId(id) }).session(session)
       // 删除订单
       result = await this.projectOrderSchema.findByIdAndRemove(id).session(session)
 

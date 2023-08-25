@@ -7,17 +7,28 @@ interface IIsRecordBase{
     isSaveRequestLog? :boolean   
 }
 
+interface IExceptionBase{
+    code? :number 
+    message? :string   
+}
+
 export class BaseException {
     code :number;
     message :string;
     e_message:string;
     is_take_response:boolean
     is_save_requestLog:boolean
-    constructor(exception ,recordConfig :IIsRecordBase ,error?){
+    constructor(exception :IExceptionBase ,recordConfig? :IIsRecordBase ,error?){
         this.code = exception.code
         this.message = exception.message
-        this.is_take_response  = typeof recordConfig.isTakeResponse =='undefined' ? true :recordConfig.isTakeResponse
-        this.is_save_requestLog = typeof recordConfig.isSaveRequestLog =='undefined' ? true :recordConfig.isSaveRequestLog  //默认记录请求日志
+        if(recordConfig){
+            this.is_take_response  = typeof recordConfig.isTakeResponse =='undefined' ? true :recordConfig.isTakeResponse
+            this.is_save_requestLog = typeof recordConfig.isSaveRequestLog =='undefined' ? true :recordConfig.isSaveRequestLog  //默认记录请求日志
+        }else{
+            this.is_take_response  =  false 
+            this.is_save_requestLog = true  //默认记录请求日志
+        }
+
         if(error){ 
 
             if(error.code && error.code != ResultCode.ERROR.code){

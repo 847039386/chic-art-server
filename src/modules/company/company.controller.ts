@@ -229,13 +229,15 @@ export class CompanyController {
 
 
       if(logo_url){
-        let httpUrlPattern = /(http|https):\/\/([\w.]+\/?)\S*/;
-        if(!httpUrlPattern.test(logo_url)){
-          let appDir = path.dirname(require.main.filename);
-          appDir = path.join(appDir,'../');
-          const dirUrl = path.join(appDir,'public'); 
-          const avatarURL = path.normalize(logo_url)
-          realUrl =  dirUrl + avatarURL;
+        if(logo_url != '/images/nlogo.png'){
+          let httpUrlPattern = /(http|https):\/\/([\w.]+\/?)\S*/;
+          if(!httpUrlPattern.test(logo_url)){
+            let appDir = path.dirname(require.main.filename);
+            appDir = path.join(appDir,'../');
+            const dirUrl = path.join(appDir,'public'); 
+            const avatarURL = path.normalize(logo_url)
+            realUrl =  dirUrl + avatarURL;
+          }
         }
       }
       const result = await this.companyService.updateLogo(dto)

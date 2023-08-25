@@ -10,6 +10,7 @@ import { CompanyModule } from '../company/company.module';
 import { ProjectOrderCameraModule } from '../project_order_camera/project_order_camera.module';
 import { ProjectOrderCustomerModule } from '../project_order_customer/project_order_customer.module';
 import { CompanyCameraModule } from '../company_camera/company_camera.module';
+import { ProjectOrderNoteModule } from '../project_order_note/project_order_note.module';
 
 @Module({
   exports: [
@@ -22,6 +23,7 @@ import { CompanyCameraModule } from '../company_camera/company_camera.module';
     MongooseModule.forFeature([{ name: 'ProjectOrder', schema: ProjectOrderSchema }]),
     forwardRef(() => ProjectOrderCustomerModule),
     forwardRef(() => ProjectOrderCameraModule),
+    forwardRef(() => ProjectOrderNoteModule),
     forwardRef(() => ProjectOrderEmployeeModule),
     CompanyEmployeeModule,
     CompanyCameraModule,

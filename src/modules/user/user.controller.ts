@@ -80,7 +80,7 @@ export class UserController {
       let user_id = req.user.id;
       let userPhonePattern = /^\d{7,8}$|^1\d{10}$|^(0\d{2,3}-?|0\d2,3 )?[1-9]\d{4,7}(-\d{1,8})?$/;
       if(!userPhonePattern.test(phone)){
-        throw new BaseException(ResultCode.USER_PHONE_VERIFY,{})
+        throw new BaseException(ResultCode.COMMON_PHONE_VERIFY,{})
       }
       
       return apiAmendFormat(await this.userService.updateInfoById(user_id,{ phone }))
@@ -115,24 +115,27 @@ export class UserController {
       }
       let avatar = user_info.avatar.toString()
       if(avatar){
-        let httpUrlPattern = /(http|https):\/\/([\w.]+\/?)\S*/;
-        if(!httpUrlPattern.test(avatar)){
-          /**
-           * 因为该项目以后可能用到七牛那么七牛返回的路径则是真实路径带有http的 所有带有http的图片非本地地址所以不走该方法
-           * 因为此项目是typescript所以nest会自动解析文件最后转换成js所在目录则是dist
-           * 所以dirname(require.main.filename);获取的真实路径是项目路径+/dist
-           * 而本服务器静态资源在和dist同级中的public里，所以这块需要用path.join这样得到了项目的真实路径
-           */
-          let appDir = path.dirname(require.main.filename);
-          appDir = path.join(appDir,'../');
-          const dirUrl = path.join(appDir,'public'); 
-          const avatarURL = path.normalize(avatar)
-          realUrl =  dirUrl + avatarURL;
-          /**
-           * 这里之所以用这种方式连接是因为删除文件是重要的操作。假如用户通过恶意修改头像地址。存到数据库里的值是../../upload
-           * 那么此时用path.join连接地址会导致去往上级根目录删除文件。就歇菜了
-           * 提一句，这里一般存到数据库里的地址都是/uploads/*.img
-           */
+        // 该地址未默认图片地址不允许删除
+        if(avatar != '/images/nuser.png'){
+          let httpUrlPattern = /(http|https):\/\/([\w.]+\/?)\S*/;
+          if(!httpUrlPattern.test(avatar)){
+            /**
+             * 因为该项目以后可能用到七牛那么七牛返回的路径则是真实路径带有http的 所有带有http的图片非本地地址所以不走该方法
+             * 因为此项目是typescript所以nest会自动解析文件最后转换成js所在目录则是dist
+             * 所以dirname(require.main.filename);获取的真实路径是项目路径+/dist
+             * 而本服务器静态资源在和dist同级中的public里，所以这块需要用path.join这样得到了项目的真实路径
+             */
+            let appDir = path.dirname(require.main.filename);
+            appDir = path.join(appDir,'../');
+            const dirUrl = path.join(appDir,'public'); 
+            const avatarURL = path.normalize(avatar)
+            realUrl =  dirUrl + avatarURL;
+            /**
+             * 这里之所以用这种方式连接是因为删除文件是重要的操作。假如用户通过恶意修改头像地址。存到数据库里的值是../../upload
+             * 那么此时用path.join连接地址会导致去往上级根目录删除文件。就歇菜了
+             * 提一句，这里一般存到数据库里的地址都是/uploads/*.img
+             */
+          }
         }
       }
       const result = await this.userService.updateInfoById(user_id,{ avatar :dto.avatar })

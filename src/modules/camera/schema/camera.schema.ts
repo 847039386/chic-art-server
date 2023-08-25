@@ -26,7 +26,7 @@ export class Camera extends Document {
     @Prop({ required: true })
     url:string 
     /**
-     * 摄像头状态 0为闲置 1为工作 ,2为空闲
+     * 摄像头状态 0为未分配 1为已分配
      * 摄像头是管理员添加的添加后为0，当给公司分配这个摄像头的时候赋值company_id并将状态改为空闲，当用户将摄像头分配给工单时候则摄像头状态为1
      */
     @Prop({ required: true ,default:0 })

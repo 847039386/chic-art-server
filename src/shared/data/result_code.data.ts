@@ -3,10 +3,10 @@ export class ResultCode {
     static SUCCESS = { code :0 ,message:"成功"} 
     // 公共错误
     static COMMON_PARAM_ERROR = { code :20001 ,message:"参数错误"} 
+    static COMMON_PHONE_VERIFY = { code :20002 ,message:"请输入正确的手机号或固定电"} 
     // 用户模块错误
     static USER_NOT_EXISTS = { code :20101 ,message:"用户不存在"} 
     static USER_NAME_VERIFY = { code :20102 ,message:"姓名应是中文姓名2-5位"} 
-    static USER_PHONE_VERIFY = { code :20103 ,message:"请输入正确的手机号或固定电话"} 
     // 账号模块错误
     static ACCOUNT_CREDENTIAL_LIMIT = { code :20201 ,message:"凭证超出限制"} 
     static ACCOUNT_CREDENTIAL_ERROR = { code :20202 ,message:"凭证错误"} 
@@ -49,6 +49,7 @@ export class ResultCode {
     static COMPANY_DESCRIPTION_VERIFY = { code :21006 ,message:"简介长度应为2-120位"}
     static COMPANY_TAG_VERIFY = { code :21007 ,message:"公司标签最多可选5个，最少选择一个"}
     static COMPANY_ADDRESS_VERIFY = { code :21008 ,message:"公司地址长度应在1-60个字符之间"} 
+    static COMPANY_AUDIT_NO = { code :21009 ,message:"该公司审核暂未通过"} 
     // 公司员工
     static COMPANY_EMPLOYEE_GROUPNAME_ERROR = { code :21101 ,message:"分组名称超出限制，应至少为1-16位"} 
     static COMPANY_EMPLOYEE_USER_ISBOSS = { code :21102 ,message:"创始人已经是公司员工"} 
@@ -73,15 +74,19 @@ export class ResultCode {
     static CAMERA_IS_NOT = { code :21501 ,message:"摄像头不存在"} 
     // 订单
     static PROJECT_ORDER_IS_NOT = { code :21601 ,message:"项目订单不存在"} 
-    static PROJECT_ORDER_NAME_LIMIT = { code :21602 ,message:"项目名称只允许数字英文或汉文还有空格1-16位"} 
-    static PROJECT_ORDER_ADDRESS_LIMIT = { code :21603 ,message:"项目地址的字符长度应在1-60个字符之间"} 
+    static PROJECT_ORDER_NAME_VERIFY = { code :21602 ,message:"项目名称只允许数字英文或汉文还有空格1-16位"} 
+    static PROJECT_ORDER_ADDRESS_VERIFY = { code :21603 ,message:"项目地址的字符长度应在1-120个字符之间"} 
     static PROJECT_ORDER_COMPANY_NOT_AUDIT = { code :21604 ,message:"公司尚未通过审核，暂时无法创建订单"}
     static PROJECT_ORDER_NOT_PERMISSION = { code :21605 ,message:"您无权限操作订单功能"}
     static PROJECT_ORDER_NOT_ALLOW = { code :21606 ,message:"项目订单已完成或取消，不允许进行更改"} 
+    static PROJECT_ORDER_CUSTOMER_VERIFY = { code :21602 ,message:"对接客户只允许数字英文或汉文还有空格1-16位"} 
     // 订单员工
     static PROJECT_ORDER_EMPLOYEE_IS_EXIST = { code :21701 ,message:"员工已加入该工单不需要重复添加"} 
     static PROJECT_ORDER_EMPLOYEE_BAN_DEL = { code :21702 ,message:"订单员工不允许被删除，他可能是管理"} 
     static PROJECT_ORDER_EMPLOYEE_IS_NOT = { code :21703 ,message:"订单员工不存在"} 
+    // 订单笔记
+    static PROJECT_ORDER_NOTE_TITLE_VERIFY = { code :21801 ,message:"笔记标题应至少为1-12位"} 
+    static PROJECT_ORDER_NOTE_CONTENT_VERIFY = { code :21802 ,message:"笔记内容应至少为1-3000位"} 
     
 
 }
