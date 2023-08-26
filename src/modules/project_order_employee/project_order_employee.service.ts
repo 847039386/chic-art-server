@@ -168,7 +168,14 @@ export class ProjectOrderEmployeeService {
       await session.endSession();
     }
     return result;
+  }
 
+  async updateById(id :string ,dto :any) {
+    return await this.projectOrderEmployeeSchema.findByIdAndUpdate(id,dto);
+  }
+
+  async findById(id :string) {
+    return await this.projectOrderEmployeeSchema.findById(id);
   }
 
 }

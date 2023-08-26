@@ -69,6 +69,29 @@ export class ProjectOrderEmployeeController {
     }
   }
 
+  @Patch('up_visible_state')
+  @ApiQuery({ name: 'id' ,description:'工程订单ID'})
+  @ApiQuery({ name: 'visible_state' ,description:'可见状态'})
+  @ApiOperation({ summary: '修改订单员工的可见状态', description: '主要针对客户是否可见' }) 
+  async updateInfoVisibleState(@Query() query) {
+    try {
+      const id = query.id;
+      let visible_state = Number(query.visible_state);
+      if(!id){
+        throw new BaseException(ResultCode.PROJECT_ORDER_EMPLOYEE_IS_NOT,{})
+      }
+
+      if(isNaN(visible_state)){
+        visible_state = 0
+      }
+      
+      return apiAmendFormat(await this.projectOrderEmployeeService.updateById(id,{ visible_state }))
+
+    } catch (error) {
+      throw new BaseException(ResultCode.ERROR,{},error)
+    }
+  }
+
 
 
   @Delete('del')
@@ -77,9 +100,19 @@ export class ProjectOrderEmployeeController {
   async remove(@Query('id') id: string) {
     try {
       if(id){
+        const poe = await this.projectOrderEmployeeService.findById(id);
+
+        if(!poe){
+          throw new BaseException(ResultCode.PROJECT_ORDER_EMPLOYEE_IS_NOT,{})
+        }
+
+        if(!poe.company_employee_id){
+          throw new BaseException(ResultCode.PROJECT_ORDER_EMPLOYEE_DEL_ERROR,{})
+        }
+
         return apiAmendFormat(await this.projectOrderEmployeeService.remove(id))
       }else{
-        throw new BaseException(ResultCode.COMMON_PARAM_ERROR,{})
+        throw new BaseException(ResultCode.PROJECT_ORDER_EMPLOYEE_IS_NOT,{})
       }
     } catch (error) {
       throw new BaseException(ResultCode.ERROR,{},error)

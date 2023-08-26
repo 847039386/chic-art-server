@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete ,Query ,Request, UseGuards } from '@nestjs/common';
 import { ProjectOrderService } from './project_order.service';
 import { CreateProjectOrderDto, ProjectOrderListAllDto, ProjectOrderListByCompanyIdDto } from './dto/create-project_order.dto';
+import { ProjectOrderHandOverDto } from './dto/update-project_order.dto';
 import { ApiTags ,ApiQuery ,ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { apiAmendFormat } from 'src/shared/utils/api.util';
 import { BaseException, ResultCode } from 'src/shared/utils/base_exception.util';
@@ -81,12 +82,20 @@ export class ProjectOrderController {
   @ApiOperation({ summary: '获取公司的所有工程工单', description: '根据公司ID获取该公司所有的工程工单' }) 
   async findProjectOrderByCompany(@Body() dto :ProjectOrderListByCompanyIdDto){
     try {
-      let page = 1;
-      let limit = 10;
-      page = Number(dto.page) || 1
-      limit = Number(dto.limit) || 10
+      let page = Number(dto.page) || 1;
+      let limit = Number(dto.limit) || 10;
+      let state = Number(dto.state) || 0;
       let conditions = { company_id : new Types.ObjectId(dto.company_id) }
-      let data =  await this.projectOrderService.findAll(page,limit,{ conditions });
+      console.log(state)
+      if(state >= 0){
+        conditions = Object.assign(conditions,{state})
+      }
+      console.log(conditions)
+
+      let data =  await this.projectOrderService.findAll(page,limit,{ 
+        conditions,
+        populate:'company_id user_id'
+      });
       return apiAmendFormat(data,{
         isTakeResponse :false,
       })
@@ -149,7 +158,7 @@ export class ProjectOrderController {
         throw new BaseException(ResultCode.PROJECT_ORDER_NAME_VERIFY,{})
       }
       if(!id){
-        throw new BaseException(ResultCode.COMMON_PARAM_ERROR,{})
+        throw new BaseException(ResultCode.PROJECT_ORDER_IS_NOT,{})
       }
       
       return apiAmendFormat(await this.projectOrderService.updateById(id,{ name}))
@@ -220,9 +229,23 @@ export class ProjectOrderController {
         throw new BaseException(ResultCode.PROJECT_ORDER_ADDRESS_VERIFY,{})
       }
       if(!id){
-        throw new BaseException(ResultCode.COMMON_PARAM_ERROR,{})
+        throw new BaseException(ResultCode.PROJECT_ORDER_IS_NOT,{})
       }
       return apiAmendFormat(await this.projectOrderService.updateById(id,{ address }))
+    } catch (error) {
+      throw new BaseException(ResultCode.ERROR,{},error)
+    }
+  }
+
+  @Patch('hand_over')
+  @ApiOperation({ summary: '根据ID转移项目', description: '根据ID转移项目，也就是修改项目的user_id' }) 
+  async updateInfoUserId(@Body() dto :ProjectOrderHandOverDto) {
+    try {
+      if(!dto.id || !dto.recv_user_id){
+        throw new BaseException(ResultCode.COMMON_PARAM_ERROR,{})
+      }
+      return apiAmendFormat(await this.projectOrderService.handOver(dto))
+
     } catch (error) {
       throw new BaseException(ResultCode.ERROR,{},error)
     }
@@ -234,7 +257,7 @@ export class ProjectOrderController {
   async remove(@Query('id') id) {
     try {
       if(!id){
-        throw new BaseException(ResultCode.COMMON_PARAM_ERROR,{})
+        throw new BaseException(ResultCode.PROJECT_ORDER_IS_NOT,{})
       }
       return apiAmendFormat(await this.projectOrderService.remove(id))
     } catch (error) {

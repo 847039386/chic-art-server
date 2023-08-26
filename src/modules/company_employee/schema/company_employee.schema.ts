@@ -23,9 +23,9 @@ export class CompanyEmployee extends Document {
     company_id: Company
     /**
      * 身份
-     * 0：审核中
-     * 1：普通员工
-     * 2：管理，公司管理由创始人更改，管理人可以创建订单分配订单工人
+     * 0：普通员工
+     * 1：管理，公司管理由创始人更改，管理人可以创建订单分配订单工人
+     * 2：公司创始人
      */
     @Prop({ required: true ,default :0 })
     identity_type: number
@@ -35,6 +35,13 @@ export class CompanyEmployee extends Document {
     // 员工备注
     @Prop({ required: true ,default :'普通员工' })
     remark :string
+    /**
+     * 审核状态 0待审核，1审核通过，
+     * 审核后该变量为0
+     * 如果不允许通过的话，逻辑将此变量改成2，用户还可以继续更改公司信息
+     */
+    @Prop({ required: true ,default :0 })
+    audit_state: number
 }
 
 export const CompanyEmployeeSchema = SchemaFactory.createForClass(CompanyEmployee);

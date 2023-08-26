@@ -57,9 +57,11 @@ export class ResultCode {
     static COMPANY_EMPLOYEE_IS_EXIST_AUDIT = { code :21104 ,message:"您已加入该公司，请等待审核"} 
     static COMPANY_EMPLOYEE_NOT_PERMISSION = { code :21105 ,message:"您没有权限操作该功能"} 
     static COMPANY_EMPLOYEE_REMARK_ERROR = { code :21106 ,message:"员工备注只允许数字英文或汉文还有空格1-16位"} 
+    static COMPANY_EMPLOYEE_IS_NOT = { code :21107 ,message:"该用户不是公司员工"} 
     // 项目订单客户关系表
     static PROJECT_ORDER_CUSTOMER_IS_EXIST = { code :21201 ,message:"您已加入该订单，不需要重复申请"} 
     static PROJECT_ORDER_CUSTOMER_IS_EXIST_AUDIT = { code :21201 ,message:"您已加入该订单，请等待审核，您可以联系项目负责人"} 
+    static PROJECT_ORDER_CUSTOMER_IS_NOT = { code :21703 ,message:"订单客户不存在"} 
     // 项目订单与监控关系表
     static PROJECT_ORDER_CAMERA_IS_EXIST = { code :21301 ,message:"请不要重复添加监控"} 
     static PROJECT_ORDER_CAMERA_NAME_LIMIT = { code :21302 ,message:"项目监控别名超出限制，应至少为1-20位"} 
@@ -84,6 +86,7 @@ export class ResultCode {
     static PROJECT_ORDER_EMPLOYEE_IS_EXIST = { code :21701 ,message:"员工已加入该工单不需要重复添加"} 
     static PROJECT_ORDER_EMPLOYEE_BAN_DEL = { code :21702 ,message:"订单员工不允许被删除，他可能是管理"} 
     static PROJECT_ORDER_EMPLOYEE_IS_NOT = { code :21703 ,message:"订单员工不存在"} 
+    static PROJECT_ORDER_EMPLOYEE_DEL_ERROR = { code :21705 ,message:"不能允许删除项目负责人"} 
     // 订单笔记
     static PROJECT_ORDER_NOTE_TITLE_VERIFY = { code :21801 ,message:"笔记标题应至少为1-12位"} 
     static PROJECT_ORDER_NOTE_CONTENT_VERIFY = { code :21802 ,message:"笔记内容应至少为1-3000位"} 

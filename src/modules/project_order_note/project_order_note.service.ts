@@ -29,23 +29,40 @@ export class ProjectOrderNoteService {
     return await schema.save()
   }
 
-  findAll() {
-    return `This action returns all projectOrderNote`;
-  }
 
   async findEmployee(page,limit ,user_id ,project_order_id){
-    user_id = new Types.ObjectId(user_id);
     project_order_id = new Types.ObjectId(project_order_id);
     let conditions = { project_order_id }
-    const por_info = await this.projectOrderEmployeeSchema.findOne({ user_id ,project_order_id })
+    const por_info = await this.projectOrderEmployeeSchema.findOne({ user_id :new Types.ObjectId(user_id) ,project_order_id })
     if(!por_info){
       // 与该订单无关系
+      throw new BaseException(ResultCode.COMPANY_EMPLOYEE_IS_NOT)
     }
 
-    if(por_info.company_employee_id){
-      // 有值则为订单员工
-      conditions = Object.assign(conditions ,{ state:{ $in:[0,2] } })
+    const po_info = await this.projectOrdeSchema.findById(project_order_id);
+
+    if(!po_info){
+      throw new BaseException(ResultCode.PROJECT_ORDER_IS_NOT)
     }
+
+    if(user_id != po_info.user_id){
+      conditions = Object.assign(conditions ,{ state:{ $in:[0,2] } })
+      console.log('不是项目负责人')
+    }else{
+      console.log('-------是项目负责人')
+    }
+
+    console.log(user_id == po_info.user_id ,user_id , po_info.user_id)
+
+    const curd = new CURD(this.projectOrderNoteSchema)
+    return curd.pagination(page,limit, { conditions  });
+  }
+
+  async findCustomer(page,limit ,project_order_id){
+
+    project_order_id = new Types.ObjectId(project_order_id);
+    let conditions = { project_order_id ,state:{ $in:[0,3] } }
+
     const curd = new CURD(this.projectOrderNoteSchema)
     return curd.pagination(page,limit, { conditions  });
   }

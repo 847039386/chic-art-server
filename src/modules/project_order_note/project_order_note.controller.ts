@@ -60,6 +60,29 @@ export class ProjectOrderNoteController {
     }
   }
 
+  @Get('list_by_customer')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @ApiQuery({ name: 'page' ,description:'当前页数' ,required :false})
+  @ApiQuery({ name: 'limit' ,description:'每页数量' ,required :false})
+  @ApiQuery({ name: 'project_order_id' ,description:'订单ID' })
+  @ApiOperation({ summary: '根据ID查看工程订单详细信息', description: '根据ID查看工程订单详细信息' }) 
+  async findCustomerNote(@Query() query ,@Request() req) {
+    try {
+      let page = 1;
+      let limit = 10;
+      let project_order_id = query.project_order_id;
+      page = Number(query.page) || 1;
+      limit = Number(query.limit) || 10;
+      if(!project_order_id){
+        throw new BaseException(ResultCode.PROJECT_ORDER_IS_NOT)
+      }
+      return apiAmendFormat(await this.projectOrderNoteService.findCustomer(page,limit,project_order_id))
+    } catch (error) {
+      throw new BaseException(ResultCode.ERROR,{},error)
+    }
+  }
+
   
 
   @Delete('del')

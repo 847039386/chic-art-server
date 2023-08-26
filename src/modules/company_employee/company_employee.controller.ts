@@ -121,7 +121,7 @@ export class CompanyEmployeeController {
   async auditEmployee(@Query('id') id: string){
     try {
       if(id){
-        return apiAmendFormat(await this.companyEmployeeService.updateEmployeeIdentityType(id,1))
+        return apiAmendFormat(await this.companyEmployeeService.updateById(id,{ audit_state : 1}))
       }else{
         throw new BaseException(ResultCode.COMMON_PARAM_ERROR,{})
       }
@@ -196,15 +196,17 @@ export class CompanyEmployeeController {
   }
 
   @Patch('up_identity_type')
-  @ApiOperation({ summary: '给公司员工分组', description: '给公司员工分组' }) 
+  @ApiOperation({ summary: '修改员工身份状态', description: '修改员工身份状态' }) 
   async updateIdentityType(@Body() dto: UpdateCompanyEmployeeIdentityTypeDto){
     try {
       if(dto.id){
-        let identity_type = 0
-        if(dto.identity_type > 2){
-          identity_type = 0
-        } else {
-          identity_type = dto.identity_type
+        let identity_type = Number(dto.identity_type)
+        if(isNaN(identity_type)){
+          identity_type = 0;
+        }else{
+          if(identity_type != 0 && identity_type != 1){
+            identity_type = 0
+          }
         }
         return apiAmendFormat(await this.companyEmployeeService.updateById(dto.id,{ identity_type }))
       }else{
@@ -214,6 +216,7 @@ export class CompanyEmployeeController {
       throw new BaseException(ResultCode.ERROR,{},error)
     }
   }
+
 
 
   @Delete('del')

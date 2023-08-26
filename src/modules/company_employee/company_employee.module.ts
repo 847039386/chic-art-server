@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { CompanyEmployeeService } from './company_employee.service';
 import { CompanyEmployeeController } from './company_employee.controller';
 import { CompanyEmployeeSchema } from './schema/company_employee.schema';
@@ -13,7 +13,7 @@ import { CompanyModule } from '../company/company.module';
   providers: [CompanyEmployeeService],
   imports: [
     MongooseModule.forFeature([{ name: 'CompanyEmployee', schema: CompanyEmployeeSchema }]),
-    CompanyModule
+    forwardRef(() => CompanyModule),
   ]
 })
 export class CompanyEmployeeModule {}

@@ -71,29 +71,23 @@ export class CompanyEmployeeService {
     return false
   }
 
-  async updateEmployeeIdentityType(id :string ,identity_type :number) {
-    switch (identity_type) {
-      case 1:
-        break;
-      default:
-        identity_type = 0
-        break;
-    }
-    return await this.companyEmployeeSchema.findByIdAndUpdate(id,{
-      identity_type
-    })
-  }
-
-
   async findCompanysByUserId(user_id :string ,page :number ,limit :number ) {
-
     page = Number(page);
     limit = Number(limit);
     user_id = user_id;
+    let match = { user_id :new Types.ObjectId(user_id) ,audit_state : 1 }
+    const uc_info = await this.companySchema.findOne({  user_id :new Types.ObjectId(user_id) })
+
+    if(uc_info){
+      console.log(uc_info)
+      const company_id = uc_info._id;
+      match = Object.assign(match,{ company_id : { $ne :company_id } })
+    }
+    console.log(match)
 
     let aggregates :any = [
       {
-        $match : { user_id :new Types.ObjectId(user_id) }
+        $match : match
       },
       { 
         $sort: { "create_time": -1 } 

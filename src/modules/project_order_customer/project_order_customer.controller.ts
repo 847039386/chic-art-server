@@ -99,15 +99,40 @@ export class ProjectOrderCustomerController {
     }
   }
 
+
+  @Patch('up_visible_state')
+  @ApiQuery({ name: 'id' ,description:'工程订单ID'})
+  @ApiQuery({ name: 'visible_state' ,description:'可见状态'})
+  @ApiOperation({ summary: '修改订单客户的可见状态', description: '主要针对员工是否可见' }) 
+  async updateInfoVisibleState(@Query() query) {
+    try {
+      const id = query.id;
+      let visible_state = Number(query.visible_state);
+      if(!id){
+        throw new BaseException(ResultCode.PROJECT_ORDER_CUSTOMER_IS_NOT,{})
+      }
+
+      if(isNaN(visible_state)){
+        visible_state = 0
+      }
+      
+      return apiAmendFormat(await this.projectOrderCustomerService.findByIdAndUpdate(id,{ visible_state }))
+
+    } catch (error) {
+      throw new BaseException(ResultCode.ERROR,{},error)
+    }
+  }
+
+
   @Delete('del')
-  @ApiQuery({ name: 'id' ,description:'公司员工关系表ID'})
+  @ApiQuery({ name: 'id' ,description:'订单客户关系表ID'})
   @ApiOperation({ summary: '根据ID切断项目订单与客户的关系', description: '根据ID切断项目订单与客户的关系，审核拒绝后也调用此方法' }) 
   async remove(@Query('id') id: string) {
     try {
       if(id){
         return apiAmendFormat(await this.projectOrderCustomerService.remove(id))
       }else{
-        throw new BaseException(ResultCode.COMMON_PARAM_ERROR,{})
+        throw new BaseException(ResultCode.PROJECT_ORDER_CUSTOMER_IS_NOT,{})
       }
     } catch (error) {
       throw new BaseException(ResultCode.ERROR,{},error)

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateProjectOrderDto } from './dto/create-project_order.dto';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+import { ProjectOrderHandOverDto } from './dto/update-project_order.dto';
 import mongoose, { Model, Types } from 'mongoose';
 import { CURD } from 'src/shared/utils/curd.util';
 import { BaseException, ResultCode } from 'src/shared/utils/base_exception.util';
@@ -36,29 +37,25 @@ export class ProjectOrderService {
         //公司不存在
         throw new BaseException(ResultCode.COMPANY_NOT_EXIST,{})
       }
-      let fzr_user_id = null;
       let fzr_company_employee_id = null;
       // 获取公司员工
       let ce_info = await this.companyEmployeeSchema.findOne({ user_id : new Types.ObjectId(user_id) ,company_id:new Types.ObjectId(dto.company_id)}).session(session)
       if(ce_info){
-        if(ce_info.identity_type != 2){
+        if(ce_info.identity_type == 0){
+          // 0是普通员工、1是管理、2是创始人
           throw new BaseException(ResultCode.COMPANY_NOT_PERMISSION,{})
         }else{
           fzr_company_employee_id = ce_info._id.toString();
-          fzr_user_id = ce_info.user_id;
         }
       }else{
-        // 如果该用户不是公司员工，那么他有可能是公司创始人创建的订单
-        if(!company_info.user_id){
-          throw new BaseException(ResultCode.USER_NOT_EXISTS,{})
-        }else{
-          if(company_info.user_id != user_id){
-            //能走到这里的判断证明用户一定不是公司员工，那么他也不是公司创始人，那么他肯定没有权限
-            throw new BaseException(ResultCode.PROJECT_ORDER_NOT_PERMISSION,{})
-          }
-          fzr_user_id = company_info.user_id;
-        }
+        // 如果该用户不是公司员工，他无权创建
+        throw new BaseException(ResultCode.PROJECT_ORDER_NOT_PERMISSION,{})
       }
+
+      if(!fzr_company_employee_id){
+        throw new BaseException(ResultCode.PROJECT_ORDER_NOT_PERMISSION,{})
+      }
+
       const projectOrder = new this.projectOrderSchema({
         name:dto.name,
         user_id: new Types.ObjectId(user_id),
@@ -69,33 +66,28 @@ export class ProjectOrderService {
         progress_template:dto.progress_template,
       })
       result = await projectOrder.save({ session })
+      // 存放订单员工信息，这里目前没有自己
       let employee_ids = dto.employee_ids;
-      // 去重数组
+      // 此时将创建人加入到这个订单里
+      employee_ids.push({
+        _id :fzr_company_employee_id,  
+        user_id,
+      })
+      // 防止万一有重复的员工添加到订单，那么此时去重这些人
       employee_ids = employee_ids.filter((item, index, arr) => { 
         return arr.findIndex(t => t.user_id === item.user_id) === index; 
       });
-      // 走这条代码的时候，订单负责人一定是员工，为了防止他添加自己，过滤
-      if(fzr_company_employee_id){
-        employee_ids = employee_ids.filter((item) => { 
-          return item._id != fzr_company_employee_id
-        });
-      }
-      // 添加的这条数据证明他没有_id=true证明他没有company_employee_id，这里虽然他有这个ID但是依旧去除掉，在该表里为空证明他是项目负责人
-      employee_ids.push({
-        _id :null,  //公司员工ID，为空相当于是负责人
-        user_id,
-      })
-      let project_order_id = result._id
+
+      // 创建后的订单id
+      let project_order_id = result._id;
       let employees_schemas = employee_ids.map((item) => {
-        let io_employee = {
+        return {
           user_id: new Types.ObjectId(item.user_id),
-          project_order_id
+          project_order_id,
+          company_employee_id :new Types.ObjectId(item._id)
         }
-        if(item._id){
-          io_employee = Object.assign(io_employee,{ company_employee_id: new Types.ObjectId(item._id) })
-        }
-        return io_employee
       })
+      //将员工分配到订单里
       await this.projectOrderEmployeeSchema.insertMany(employees_schemas,{ session })
       await session.commitTransaction();
     } catch (error) {
@@ -148,6 +140,71 @@ export class ProjectOrderService {
       result = await this.projectOrderSchema.findByIdAndRemove(id).session(session)
 
       // throw new BaseException(ResultCode.ERROR,{})
+
+      await session.commitTransaction();
+    } catch (error) {
+      await session.abortTransaction();
+      throw new BaseException(ResultCode.ERROR,{},error)
+    }finally{
+      await session.endSession();
+    }
+    return result;
+  }
+
+  /**
+   * 转移项目，实际上是修改了项目订单的user_id
+   * @param id 项目ID
+   * @param send_user_id 转交人ID
+   * @param recv_user_id 接受人ID
+   * @returns 
+   */
+  async handOver(dto :ProjectOrderHandOverDto){
+    let session = await this.connection.startSession(); 
+    session.startTransaction();
+    let result;
+    try {
+      // 获取订单消息
+      let po_info = await this.projectOrderSchema.findById(dto.id).session(session);
+
+      if(!po_info){
+        throw new BaseException(ResultCode.PROJECT_ORDER_IS_NOT,{})
+      }
+
+      // 获取订单所属的公司
+      let company_id = po_info.company_id;
+
+      // 查看公司所属的员工
+      let ce_info = await this.companyEmployeeSchema.findOne({ company_id ,user_id :new Types.ObjectId(dto.recv_user_id) }).session(session)
+
+      if(!ce_info){
+        // 接受人不属于该公司
+        throw new BaseException(ResultCode.COMPANY_EMPLOYEE_IS_NOT)
+      }
+
+      // 查看员工是否在该订单内
+      let poe_info = await this.projectOrderEmployeeSchema.findOne({ 
+        project_order_id : new Types.ObjectId(dto.id), 
+        user_id :new Types.ObjectId(dto.recv_user_id),
+        company_employee_id : ce_info._id
+      }).session(session)
+
+      console.log(poe_info)
+
+      if(poe_info){
+        // 如果该员工在订单里，则直接修改
+        result = await this.projectOrderSchema.findByIdAndUpdate(dto.id,{ user_id :new Types.ObjectId(dto.recv_user_id) }).session(session)
+        console.log('员工在订单内')
+      }else{
+        // 把他加入到订单内，在修改
+        const poe_schema = new this.projectOrderEmployeeSchema({ 
+          user_id :new Types.ObjectId(dto.recv_user_id), 
+          project_order_id :new Types.ObjectId(dto.id),
+          company_employee_id :new Types.ObjectId(ce_info._id)
+        })
+        await poe_schema.save({ session })
+        result = await this.projectOrderSchema.findByIdAndUpdate(dto.id,{ user_id :new Types.ObjectId(dto.recv_user_id) }).session(session)
+        console.log('员工不在订单内')
+      }
 
       await session.commitTransaction();
     } catch (error) {

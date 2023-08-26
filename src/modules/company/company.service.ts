@@ -1,29 +1,59 @@
 import { Injectable } from '@nestjs/common';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto, UpdateCompanyWeightDto ,UpdateCompanyStateDto ,UpdateCompanyLogoDto ,UpdateCompanyNameDto, UpdateCompanyDescriptionDto ,UpdateCompanyTagDto, UpdateCompanyAddressDto } from './dto/update-company.dto';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+import mongoose, { Model, Types } from 'mongoose';
 import { CURD } from 'src/shared/utils/curd.util';
+import { BaseException, ResultCode } from 'src/shared/utils/base_exception.util';
 
 @Injectable()
 export class CompanyService {
 
   constructor(
     @InjectModel('Company') private readonly companySchema: Model<any>,
+    @InjectModel('CompanyEmployee') private readonly companyEmployeeSchema: Model<any>,
+    @InjectConnection() private readonly connection: mongoose.Connection
     ){}
 
 
   async create(user_id :string ,dto: CreateCompanyDto) {
 
-    const company = new this.companySchema({
-      logo:dto.logo,
-      user_id: new Types.ObjectId(user_id),
-      name : dto.name,
-      description :dto.description,
-      tag_ids :dto.tag_ids,
-      address: dto.address || '未填写地址'
-    })
-    return await company.save()
+    let session = await this.connection.startSession(); 
+    session.startTransaction();
+    let result;
+    try {
+
+      // 创建公司
+      const company = new this.companySchema({
+        logo:dto.logo,
+        user_id: new Types.ObjectId(user_id),
+        name : dto.name,
+        description :dto.description,
+        tag_ids :dto.tag_ids,
+        address: dto.address || '未填写地址'
+      })
+      result = await company.save({session});
+
+      // 在将创始人添加到公司员工列表中
+      const companyEmployee = new this.companyEmployeeSchema({
+        user_id :new Types.ObjectId(user_id),
+        company_id :new Types.ObjectId(result._id),
+        remark :'创始人',
+        audit_state :1, // 审核一定是通过的因为添加人是他自己
+        identity_type :2 //身份2是创始人
+      })
+
+      await companyEmployee.save({session});
+
+
+      await session.commitTransaction();
+    } catch (error) {
+      await session.abortTransaction();
+      throw new BaseException(ResultCode.ERROR,{},error)
+    }finally{
+      await session.endSession();
+    }
+    return result;
   }
 
   // 根据公司名查找公司是否重复

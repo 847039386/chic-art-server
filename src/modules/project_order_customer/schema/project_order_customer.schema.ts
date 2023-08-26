@@ -28,6 +28,9 @@ export class ProjectOrderCustomer extends Document {
      */
     @Prop({ required: true ,default:0 })
     state: number
+    // 可见状态0为允许员工可见，1则不允许
+    @Prop({ required: true ,default:0 })
+    visible_state: number
 
 }
 

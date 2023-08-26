@@ -25,6 +25,9 @@ export class ProjectOrderEmployee extends Document {
     // 工程订单ID,
     @Prop({ type: Types.ObjectId, ref: 'ProjectOrder' ,required:true })
     project_order_id: ProjectOrder
+    // 可见状态0为允许客户可见，1则不允许
+    @Prop({ type: Number, required:true ,default : 0})
+    visible_state:number
 
 }
 

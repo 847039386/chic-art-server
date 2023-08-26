@@ -48,7 +48,7 @@ export class ProjectOrderCustomerService {
 
     let aggregates :any = [
       {
-        $match : { user_id :new Types.ObjectId(user_id) }
+        $match : { user_id :new Types.ObjectId(user_id) ,state : 1 }    // state1,是审核通过的用户
       },
       {
         $lookup: {
@@ -69,6 +69,28 @@ export class ProjectOrderCustomerService {
     }
 
     aggregates = aggregates.concat([
+      {
+        $lookup: {
+          from: "company",
+          localField: "project_order_id.company_id",
+          foreignField: "_id",
+          as: "project_order_id.company_id"
+        }
+      },
+      {
+        $unwind: "$project_order_id.company_id"
+      },
+      {
+        $lookup: {
+          from: "user",
+          localField: "project_order_id.user_id",
+          foreignField: "_id",
+          as: "project_order_id.user_id"
+        }
+      },
+      {
+        $unwind: "$project_order_id.user_id"
+      },
       {
         $facet :{
           total: [{ $count:"count" }],

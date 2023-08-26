@@ -61,7 +61,10 @@ export class ProjectOrderListByCompanyIdDto {
     @ApiProperty({ description: '每页数量', type: Number ,example :10 })
     @IsInt()
     limit ?:number
+    @ApiProperty({ description: '订单状态', type: Number ,example :0 })
+    @IsInt()
+    state ?:number
     @ApiProperty({ description: '公司id', type: String })
     @IsString()
-    company_id ?:string
+    company_id :string
 }
