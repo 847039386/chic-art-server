@@ -4,6 +4,7 @@ import { CompanyController } from './company.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CompanySchema } from './schema/company.schema';
 import { CompanyEmployeeModule } from '../company_employee/company_employee.module';
+import { MessageModule } from '../message/message.module';
 
 @Module({
   exports:[
@@ -15,6 +16,7 @@ import { CompanyEmployeeModule } from '../company_employee/company_employee.modu
   imports: [
     MongooseModule.forFeature([{ name: 'Company', schema: CompanySchema }]),
     forwardRef(() => CompanyEmployeeModule),
+    MessageModule
   ]
 })
 

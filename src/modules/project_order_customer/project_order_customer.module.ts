@@ -4,6 +4,8 @@ import { ProjectOrderCustomerController } from './project_order_customer.control
 import { MongooseModule } from '@nestjs/mongoose';
 import { ProjectOrderCustomerSchema } from './schema/project_order_customer.schema';
 import { ProjectOrderModule } from '../project_order/project_order.module';
+import { UserModule } from '../user/user.module';
+import { MessageModule } from '../message/message.module';
 
 @Module({
   exports:[
@@ -14,6 +16,8 @@ import { ProjectOrderModule } from '../project_order/project_order.module';
   imports: [
     MongooseModule.forFeature([{ name: 'ProjectOrderCustomer', schema: ProjectOrderCustomerSchema }]),
     forwardRef(() => ProjectOrderModule),
+    MessageModule,
+    UserModule
   ]
 })
 export class ProjectOrderCustomerModule {}

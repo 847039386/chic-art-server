@@ -21,6 +21,10 @@ export class ProjectOrderCustomerService {
     return await this.projectOrderCustomerSchema.findOne(dto)
   }
 
+  async findById(id :string){
+    return await this.projectOrderCustomerSchema.findById(id).populate('user_id project_order_id')
+  }
+
   async getCustomersByProjectOrderId(project_order_id :string ){
     let id = new Types.ObjectId(project_order_id);
     return await this.projectOrderCustomerSchema.find({ project_order_id :id }).populate('user_id')

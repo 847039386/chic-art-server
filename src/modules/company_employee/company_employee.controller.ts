@@ -8,12 +8,16 @@ import { BaseException, ResultCode } from 'src/shared/utils/base_exception.util'
 import { Types } from 'mongoose';
 import { CompanyService } from '../company/company.service';
 import { AuthGuard } from '@nestjs/passport';
+import { MessageService } from '../message/message.service';
+import { UserService } from '../user/user.service';
 
 @Controller('api/company-employee')
 @ApiTags('公司员工接口')
 export class CompanyEmployeeController {
   constructor(
     private readonly companyService: CompanyService,
+    private readonly userService: UserService,
+    private readonly messageService: MessageService,
     private readonly companyEmployeeService: CompanyEmployeeService
   ){}
 
@@ -24,8 +28,13 @@ export class CompanyEmployeeController {
   async create(@Body() dto: CreateCompanyEmployeeDto ,@Request() req) {
     // token中的userid就是登陆人
     let req_user_id = req.user.id;
-    console.log(req.user.id)
     try {
+
+      const user_info =  await this.userService.findById(req_user_id)
+      if(!user_info){
+        throw new BaseException(ResultCode.USER_NOT_EXISTS)
+      }
+
       if(dto.company_id){
         let company :any = await this.companyService.findById(dto.company_id)
         if(company){
@@ -50,6 +59,16 @@ export class CompanyEmployeeController {
                   throw new BaseException(ResultCode.COMPANY_EMPLOYEE_IS_EXIST_AUDIT,{})
                 }
               }else{
+                // 申请人进入公司会发送两条消息，一条是给自己的，一条是给对方的，告诉对方有人申请了，这里这个对方就是公司创始人
+                const company_name = company.name;
+                const company_csr = company.user_id._id;
+                // 申请人消息
+                const myMessageDto = { title :'系统消息' , content :`您申请加入公司：${company_name}，请耐心等待对方审核，您也可以线下联系对方。` ,recv_user_id :new Types.ObjectId(req_user_id) }
+                await this.messageService.createSystemMessage(myMessageDto)
+                // 公司创始人消息
+                const sqr_name = user_info.name || user_info.nickname;
+                const heMessageDto = { title :'系统消息' , content :`${sqr_name} 申请加入您的公司，您可以在您公司信息中的员工管理添加对方。` ,recv_user_id :company_csr }
+                await this.messageService.createSystemMessage(heMessageDto)
                 return apiAmendFormat(await this.companyEmployeeService.create(req_user_id,dto.company_id))
               }
             }
@@ -103,11 +122,6 @@ export class CompanyEmployeeController {
       let user_id = req.user.id
       page = Number(query.page) || 1;
       limit = Number(query.limit) || 10;
-      console.log(user_id)
-      // let result = await this.companyEmployeeService.findAll(page,limit,{
-      //   conditions :{ user_id },
-      //   populate : { path:'company_id'}
-      // })
       let result = await this.companyEmployeeService.findCompanysByUserId(user_id,page,limit)
       return apiAmendFormat(result)
     } catch (error) {
@@ -121,7 +135,42 @@ export class CompanyEmployeeController {
   async auditEmployee(@Query('id') id: string){
     try {
       if(id){
+
+        let ce_info = await this.companyEmployeeService.findById(id)
+
+        if(!ce_info || !ce_info.user_id || !ce_info.company_id){
+          throw new BaseException(ResultCode.COMPANY_EMPLOYEE_IS_NOT,{})
+        }
+
+        const heMessageDto = { title :'系统消息' , content :`您加入 ${ce_info.company_id.name} 公司的申请通过啦，如果列表中尚未存在该公司，可以手动下拉刷新` ,recv_user_id :ce_info.user_id._id }
+        await this.messageService.createSystemMessage(heMessageDto)
+
         return apiAmendFormat(await this.companyEmployeeService.updateById(id,{ audit_state : 1}))
+      }else{
+        throw new BaseException(ResultCode.COMMON_PARAM_ERROR,{})
+      }
+    } catch (error) {
+      throw new BaseException(ResultCode.ERROR,{},error)
+    }
+  }
+
+  @Delete('audit_not')
+  @ApiQuery({ name: 'id' ,description:'公司员工ID'})
+  @ApiOperation({ summary: '公司员工申请允许', description: '公司员工申请允许' }) 
+  async auditNotEmployee(@Query('id') id: string){
+    try {
+      if(id){
+
+        let ce_info = await this.companyEmployeeService.findById(id)
+
+        if(!ce_info || !ce_info.user_id || !ce_info.company_id){
+          throw new BaseException(ResultCode.COMPANY_EMPLOYEE_IS_NOT,{})
+        }
+
+        const heMessageDto = { title :'系统消息' , content :`您加入 ${ce_info.company_id.name} 公司的请求已被拒绝，您可以线下联系公司负责人` ,recv_user_id :ce_info.user_id._id }
+        await this.messageService.createSystemMessage(heMessageDto)
+
+        return apiAmendFormat(await this.companyEmployeeService.remove(id))
       }else{
         throw new BaseException(ResultCode.COMMON_PARAM_ERROR,{})
       }

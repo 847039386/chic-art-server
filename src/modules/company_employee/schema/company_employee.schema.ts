@@ -37,8 +37,7 @@ export class CompanyEmployee extends Document {
     remark :string
     /**
      * 审核状态 0待审核，1审核通过，
-     * 审核后该变量为0
-     * 如果不允许通过的话，逻辑将此变量改成2，用户还可以继续更改公司信息
+     * 审核后该变量为 0
      */
     @Prop({ required: true ,default :0 })
     audit_state: number

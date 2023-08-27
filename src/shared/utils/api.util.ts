@@ -43,7 +43,7 @@ export const apiAmendFormat = (data :any,config_info? :IapiData) =>{
         config = {
             is_api_format :true,
             api_type : config_info.apiType || 'API',
-            is_take_response :typeof config_info.isTakeResponse =='undefined' ? true :config_info.isTakeResponse,
+            is_take_response :typeof config_info.isTakeResponse =='undefined' ? false :config_info.isTakeResponse,
             is_save_requestLog :typeof config_info.isSaveRequestLog =='undefined' ? true :config_info.isSaveRequestLog,
             is_save_operator :typeof config_info.isSaveOperator =='undefined' ? false :config_info.isSaveOperator,
         }

@@ -90,7 +90,9 @@ export class CompanyController {
       if(typeof dto.audit_state != 'undefined' && dto.audit_state != null){
         match = Object.assign(match,{ audit_state :dto.audit_state})
       }
-      let data =  await this.companyService.findAll(page,limit,{ populate:'user_id tag_ids' ,conditions: match });
+      let data =  await this.companyService.findAll(page,limit,{ populate:'user_id tag_ids' ,conditions: match ,sort :{ 
+        weight:-1
+      }});
       return apiAmendFormat(data,{
         isTakeResponse :false,
     })

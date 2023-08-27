@@ -16,7 +16,7 @@ export class CreateSystemMessageDto {
 
     @IsString()
     @ApiProperty({ description: '接收人ID', example:'接收人ID' })
-    recv_user_id: string
+    recv_user_id: any
 
 }
 
@@ -33,7 +33,7 @@ export class CreateMailMessageDto {
 
     @IsString()
     @ApiProperty({ description: '发送人ID', example:'发送人ID' })
-    send_user_id: string
+    send_user_id: any
 
 }
 

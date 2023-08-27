@@ -1,10 +1,12 @@
+import * as dayjs from 'dayjs'
+import { Types } from 'mongoose';
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { CompanyCameraService } from './company_camera.service';
 import { CreateCompanyCameraDto ,AssignCameraToCompanyDto } from './dto/create-company_camera.dto';
 import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { BaseException, ResultCode } from 'src/shared/utils/base_exception.util';
 import { apiAmendFormat } from 'src/shared/utils/api.util';
-import { Types } from 'mongoose';
+import { UpdateCompanyCameraExpireTimeDto } from './dto/update-company_camera.dto';
 
 @Controller('api/company-camera')
 @ApiTags('公司摄像头关系接口')
@@ -96,6 +98,31 @@ export class CompanyCameraController {
       throw new BaseException(ResultCode.ERROR,{},error)
     }
   }
+
+  @Patch('up_expire_time')
+  @ApiOperation({ summary: '修改公司摄像头的过期时间', description: '修改公司摄像头的过期时间' }) 
+  async setDuration(@Body() dto: UpdateCompanyCameraExpireTimeDto) {
+    try {
+      if(dto.id){
+        
+        const expire_time = dto.expire_time.toString();
+        if(dayjs(expire_time).isValid()){
+
+
+
+          return apiAmendFormat(await this.companyCameraService.findByIdAndUpdate(dto.id,{ expire_time : dayjs(expire_time)}))
+        }else{
+          throw new BaseException(ResultCode.ERROR,{})
+        }
+      }else{
+        throw new BaseException(ResultCode.COMMON_PARAM_ERROR,{})
+      }
+    } catch (error) {
+      throw new BaseException(ResultCode.ERROR,{},error)
+    }
+  }
+
+  
 
   @Delete('del')
   @ApiQuery({ name: 'id' ,description:'公司摄像头关系表ID'})

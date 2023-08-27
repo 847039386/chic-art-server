@@ -1,6 +1,6 @@
 // 角色表
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export type MessageDocument = Message & Document;
 
@@ -24,10 +24,10 @@ export class Message extends Document {
     @Prop({ required: true })
     content: string
     // 消息发送人，可为空
-    @Prop({  })
+    @Prop({ type: Types.ObjectId, ref: 'User'  })
     send_user_id: string
     // 消息接收人，可为空
-    @Prop({  })
+    @Prop({ type: Types.ObjectId, ref: 'User'  })
     recv_user_id: string
     /**
      * 消息类型，不许为空
@@ -36,6 +36,10 @@ export class Message extends Document {
      */
     @Prop({ required: true })
     type: number
+    // 0未读 1是已读
+    @Prop({ required: true ,default :0 })
+    state: number
+
 
 }
 

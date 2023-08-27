@@ -11,6 +11,7 @@ export class CompanyService {
 
   constructor(
     @InjectModel('Company') private readonly companySchema: Model<any>,
+    @InjectModel('Message') private readonly messageSchema: Model<any>,
     @InjectModel('CompanyEmployee') private readonly companyEmployeeSchema: Model<any>,
     @InjectConnection() private readonly connection: mongoose.Connection
     ){}
@@ -44,6 +45,14 @@ export class CompanyService {
       })
 
       await companyEmployee.save({session});
+
+      const message = new this.messageSchema({
+        type:0,
+        title:'系统消息',
+        content :`您创建的公司：${dto.name} 已经成功，管理员将在1-3个工作日审核信息，请耐心等待。`,
+        recv_user_id :new Types.ObjectId(user_id)
+      })
+      await message.save({ session })
 
 
       await session.commitTransaction();

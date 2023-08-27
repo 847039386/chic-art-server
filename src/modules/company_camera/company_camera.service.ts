@@ -108,6 +108,10 @@ export class CompanyCameraService {
     return result;
   }
 
+  async findByIdAndUpdate(id :string, update:object){
+    return await this.companyCameraSchema.findByIdAndUpdate(id,update)
+  }
+
   async remove(id: string) {
     let session = await this.connection.startSession(); 
     session.startTransaction();

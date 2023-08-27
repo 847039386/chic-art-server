@@ -39,6 +39,10 @@ export class CompanyEmployeeService {
     return await this.companyEmployeeSchema.updateMany(filter,data)
   }
 
+  async findById(id){
+    return await this.companyEmployeeSchema.findById(id).populate('company_id')
+  }
+
   async remove(id: string) {
     return await this.companyEmployeeSchema.findByIdAndRemove(id)
   }
@@ -57,16 +61,13 @@ export class CompanyEmployeeService {
     let company = e_company.company_id;
     let identity_type = e_company.identity_type;
     if(company.user_id == user_id){
-      console.log('是创始人操作')
       // 允许创始人操作
       return true
     }else{
       // 允许管理员操作
       if(identity_type == 2){
-        console.log('是管理员操作')
         return true
       }
-      console.log('员工')
     }
     return false
   }
@@ -79,11 +80,9 @@ export class CompanyEmployeeService {
     const uc_info = await this.companySchema.findOne({  user_id :new Types.ObjectId(user_id) })
 
     if(uc_info){
-      console.log(uc_info)
       const company_id = uc_info._id;
       match = Object.assign(match,{ company_id : { $ne :company_id } })
     }
-    console.log(match)
 
     let aggregates :any = [
       {

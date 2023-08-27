@@ -2,22 +2,18 @@ import { Model, Types } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserDto, SearchUserDto } from './dto/create-user.dto';
-import { UpdateUserStateDto} from './dto/update-user.dto';
-import { CreateUserGroupUserDto } from '../user_group_user/dto/create-user_group_user.dto';
-import { CreateUserGroupRoleDto } from '../user_group_role/dto/create-user_group_role.dto';
 import { sonsTree, treeFormat } from 'src/shared/utils/tree.util';
-import { CreateRolePermissionDto } from '../role_permission/dto/create-role_permission.dto';
 
 
 @Injectable()
 export class UserService {
 
   constructor(
-    @InjectModel('User') private readonly userSchema: Model<CreateUserDto>,
-    @InjectModel('UserGroup') private readonly userGroupSchema: Model<CreateUserGroupUserDto>,
-    @InjectModel('UserGroupUser') private readonly userGroupUserSchema: Model<CreateUserGroupUserDto>,
-    @InjectModel('UserGroupRole') private readonly userGroupRoleSchema: Model<CreateUserGroupRoleDto>,
-    @InjectModel('RolePermission') private readonly rolePermissionSchema: Model<CreateRolePermissionDto>,
+    @InjectModel('User') private readonly userSchema: Model<any>,
+    @InjectModel('UserGroup') private readonly userGroupSchema: Model<any>,
+    @InjectModel('UserGroupUser') private readonly userGroupUserSchema: Model<any>,
+    @InjectModel('UserGroupRole') private readonly userGroupRoleSchema: Model<any>,
+    @InjectModel('RolePermission') private readonly rolePermissionSchema: Model<any>,
   ) { }
   
   async create(createUserDto: CreateUserDto) {

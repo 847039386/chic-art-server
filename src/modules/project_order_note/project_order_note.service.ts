@@ -47,9 +47,6 @@ export class ProjectOrderNoteService {
 
     if(user_id != po_info.user_id){
       conditions = Object.assign(conditions ,{ state:{ $in:[0,2] } })
-      console.log('不是项目负责人')
-    }else{
-      console.log('-------是项目负责人')
     }
 
     console.log(user_id == po_info.user_id ,user_id , po_info.user_id)
